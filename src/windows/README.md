@@ -2,14 +2,16 @@
 
 This is the directory for windows build. As other files are added these commands will be updated or changed to a makefile.
 
-The following can be used to build, while inside the windows directory:
+The following can be used to build and executed, while inside the windows directory and in powershell:
 
-```bash
-g++ --std=c++17 mdrender.cpp -o build/mdrender
+```PS1
+g++ --std=c++17 main.cpp utils/html.cpp -o build/mdrender
+.\build\mdrender.exe
 ```
 
-It also can be executed in the following method:
+If you are using command prompt:
 
-```bash
-build\mdrender.exe
+```CMD
+g++ --std=c++17 main.cpp utils/html.cpp -o build/mdrender
+biuld\mdrender.exe
 ```

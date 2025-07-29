@@ -1,7 +1,7 @@
 # Vscode stuff
 .vscode/
 
-# Linux as it is not built
+# REMOVE: Linux as it is not built
 src/linx/
 
 # Build files within src

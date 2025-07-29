@@ -6,7 +6,6 @@ A program for rendering a .md file to a .html file locally, comes with some cust
 
 - Make Memory Safe
 - Build interpreter for .md files
-- Build renderer
 
 ## Supported Elements
 

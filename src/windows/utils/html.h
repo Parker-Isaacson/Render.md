@@ -6,48 +6,51 @@
 #include <map>
 #include <string>
 #include <fstream>
+#include <memory> // for std::unique_ptr
 
 class htmlElement {
-    private:
-        // Private variables
-        int tabIndex_ = 0; // By default exist at root
-        std::string type_ = "div"; // By defualt be a div
-        std::string text_ = ""; // By default have no internal text
-        std::map<std::string, std::string> attributes_; // By defualt have no attribues
-        std::vector<htmlElement*> children_; // By defualt have no children
+private:
+    int tabIndex_ = 0;
+    std::string type_ = "div";
+    std::string text_ = "";
+    std::map<std::string, std::string> attributes_;
+    std::vector<std::unique_ptr<htmlElement>> children_;
 
-        // Private methods
-        std::string repeat(const std::string& str, const size_t& times);
-    public:
-        // Getters and Setters for all private variables
-        int get_tab_index();
-        void set_tab_index(const int& val);
-        std::string get_type();
-        void set_type(const std::string& val);
-        std::string get_text();
-        void set_text(const std::string& val);
-        std::map<std::string, std::string> get_attribues();
-        void set_attributes(const std::map<std::string, std::string>& val);
-        std::vector<htmlElement*> get_children();
-        void set_children(const std::vector<htmlElement*>& val);
-        
-        // Special Getters and Setters
-        void set_attribute(const std::string& key, const std::string& val);
-        void remove_attribute(const std::string& key);
-        void add_child(htmlElement* child); // Cant be const??
-        // No support for finding a child, loop through the result of get_children()
-        void remove_child(const std::vector<htmlElement*>::const_iterator& index);
-        void remove_children(const std::vector<htmlElement*>::const_iterator& first, const std::vector<htmlElement*>::const_iterator& last);
+    std::string repeat(const std::string& str, const size_t& times);
 
-        // Constructors, might add support for others if it becomes needed, through can be added externally
-        htmlElement();
-        htmlElement(const int& tabIndex, const std::string& type);
-        htmlElement(const int& tabIndex, const std::string& type, const std::string& text);
-        htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes);
-        htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, const std::vector<htmlElement*>& children);
+public:
+    // Getters and Setters
+    int get_tab_index();
+    void set_tab_index(const int& val);
+    std::string get_type();
+    void set_type(const std::string& val);
+    std::string get_text();
+    void set_text(const std::string& val);
+    std::map<std::string, std::string> get_attribues();
+    void set_attributes(const std::map<std::string, std::string>& val);
 
-        // Computation Methods
-        bool htmlRender(std::ostream& stream);
+    // Children access
+    std::vector<std::unique_ptr<htmlElement>>& get_children();
+    void set_children(std::vector<std::unique_ptr<htmlElement>>&& val); // move-based
+
+    // Attribute methods
+    void set_attribute(const std::string& key, const std::string& val);
+    void remove_attribute(const std::string& key);
+
+    // Child management
+    void add_child(std::unique_ptr<htmlElement> child);
+    void remove_child(size_t index);
+    void clear_children();
+
+    // Constructors
+    htmlElement();
+    htmlElement(const int& tabIndex, const std::string& type);
+    htmlElement(const int& tabIndex, const std::string& type, const std::string& text);
+    htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes);
+    htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children);
+
+    // Render
+    bool htmlRender(std::ostream& stream);
 };
 
 #endif // HTML_H

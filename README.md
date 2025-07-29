@@ -1,11 +1,11 @@
 # MarkDown Render
 
-A program for rendering a .md file to a .html file locally, comes with some customization
+A program for rendering a markdown file to a html file locally, comes with some customization
 
 ## TODO
 
-- Make Memory Safe
-- Build interpreter for .md files
+- Ensure memory safety
+- Build interpreter for markdown files
 
 ## Supported Elements
 

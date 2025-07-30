@@ -6,9 +6,12 @@ A program for rendering a markdown file to a html file locally, comes with some 
 
 - Ensure memory safety
 - Build interpreter for markdown files
-  - mdRender::render() step 3
-  - mdRender::renderText() all
-  - mdRender::renderList() ol and nested in li
+  - void render(); // Bypass because void render(htmlElement& parent = root_); is not allowed :(
+  - void render(htmlElement& parent);
+  - void renderText(htmlElement& parent, std::string& line);
+  - void renderHeading(htmlElement& parent, std::string& line);
+  - void renderBlockQuote(htmlElement& parent, std::string& line);
+  - void renderList(htmlElement& parent, std::vector<std::string>& lines);
 
 ## Supported Elements
 

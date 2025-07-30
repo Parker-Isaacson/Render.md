@@ -10,6 +10,3 @@ src/linx/
 # Build files within src
 src/windows/build/
 src/linux/build/
-
-# REMOVE: Ignore examples as they are bad!
-examples/

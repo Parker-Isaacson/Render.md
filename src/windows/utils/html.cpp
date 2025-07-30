@@ -55,6 +55,12 @@ htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std
 htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children)
     : tabIndex_(tabIndex), type_(type), text_(text), attributes_(attributes), children_(std::move(children)) {}
 
+htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes)
+    : tabIndex_(tabIndex), type_(type), attributes_(attributes) {}
+
+htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children)
+    : tabIndex_(tabIndex), type_(type), attributes_(attributes), children_(std::move(children)) {}
+
 // Render function
 /* Example
 htmlElement root;

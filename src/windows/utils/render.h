@@ -15,7 +15,7 @@ private:
 
 public:
     renderError(const std::string& msg) : msg_(msg) {}
-    const char* renderError::what() const noexcept override {
+    const char* what() const noexcept override {
         return msg_.c_str();
     }
 };
@@ -50,6 +50,9 @@ public:
     void renderHeading(htmlElement& parent, std::string& line);
     void renderBlockQuote(htmlElement& parent, std::string& line);
     void renderList(htmlElement& parent, std::vector<std::string>& lines);
+
+    // Method for outputing
+    void output(std::ostream& outStream_ = std::cout);
 };
 
 #endif // RENDER_H

@@ -1,6 +1,22 @@
 #ifndef HTML_H
 #define HTML_H
 
+/* Test case to demonstrate functionality.
+#include "utils/render.h"
+#include "utils/html.h"
+#include <memory>
+#include <fstream>
+
+int main() {
+    // Test for html.h
+    auto root = std::make_unique<htmlElement>(0, "div");
+    auto child = std::make_unique<htmlElement>(1, "p", "I am a paragraph");
+    root->add_child(std::move(child));
+    root->htmlRender(std::cout);
+    return 0;
+}
+*/
+
 #include <iostream>
 #include <vector>
 #include <map>
@@ -48,6 +64,8 @@ public:
     htmlElement(const int& tabIndex, const std::string& type, const std::string& text);
     htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes);
     htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children);
+    htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes);
+    htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children);
 
     // Render
     bool htmlRender(std::ostream& stream);

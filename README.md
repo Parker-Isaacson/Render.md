@@ -6,7 +6,9 @@ A program for rendering a markdown file to a html file locally, comes with some 
 
 - Ensure memory safety
 - Build interpreter for markdown files
-- Build better examples.
+  - mdRender::render() step 3
+  - mdRender::renderText() all
+  - mdRender::renderList() ol and nested in li
 
 ## Supported Elements
 
@@ -40,24 +42,34 @@ As of now the syntax will be strict:
 
 ## Adjustments
 
-Adjustments are things that change how the renderer will look through the code as of now the following are possibe:
+Adjustments are things that change how the renderer will look through the code. Afther the block of adjustments must be at leat 1 blank line. As of now the following are possibe:
 - Tab Width
   - This is the amount of spaces 1 Tab will be asumed to have.
   - Can be changed with `--tab-width` or by adding `?tab-width==` to the top of the markdown file.
   - Expects an integer value.
-  - Default value of `2`
+  - Default value of `2`.
 - Text Color
   - This will be the color of the text.
   - Can be changed with `--text-color` or by adding `?text-color==` to the top of the markdown file.
   - Expects a string, like `#000000` will work. Spaces are not permited.
-  - Default value of of `#000000`
+  - Default value of of `#000000`.
 - Background Color
-  - This will be the background color of the output
+  - This will be the background color of the output.
     - This will also effect the background color of `` `code` ``, with `` `code` `` being 15% darker than what is provided here.
     - This will also effect the background color of a Blockquote, with a Blockquote being 15% darker than what is provided here.
   - Can be changed with `--background-color` or by adding `?background-color==` to the top of the markdown file.
   - Expects a string, like either `#ffffff` will work. Spaces are not permited.
-  - Defualt value of `#ffffff`
+  - Defualt value of `#ffffff`.
+- Margin, *recomended to leave as default*
+  - This will determing the amount of margin surrounding all elements.
+  - Can be changed with `--margin` or by adding `?margin==` to the top of the markdown file.
+  - Expects a integer.
+  - Defualt value of `0`.
+- Padding, *recomended to leave as default*
+  - This will determing the amount of padding surrounding all elements.
+  - Can be changed with `--padding` or by adding `?padding==` to the top of the markdown file.
+  - Expects a integer.
+  - Defualt value of `0`.
 
 ## Comments
 
@@ -68,7 +80,6 @@ Comments are not currently supported, though they will be added. Sytnax will lik
 
 --END COMMENT--
 ```
-
 
 ## Examples
 

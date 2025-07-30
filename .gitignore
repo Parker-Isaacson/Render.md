@@ -1,6 +1,9 @@
 # Vscode stuff
 .vscode/
 
+# Testing direcotry
+test/
+
 # REMOVE: Linux as it is not built
 src/linx/
 

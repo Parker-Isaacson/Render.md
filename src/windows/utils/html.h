@@ -17,6 +17,7 @@ int main() {
 }
 */
 
+#include <exception>
 #include <iostream>
 #include <vector>
 #include <map>
@@ -24,37 +25,48 @@ int main() {
 #include <fstream>
 #include <memory> // for std::unique_ptr
 
+class htmlError : public std::exception {
+private:
+    std::string msg_; // No default error
+
+public:
+    htmlError(const std::string& msg) : msg_(msg) {}
+    const char* what() const noexcept override {
+        return msg_.c_str();
+    }
+};
+
 class htmlElement {
 private:
     int tabIndex_ = 0;
     std::string type_ = "div";
     std::string text_ = "";
     std::map<std::string, std::string> attributes_;
-    std::vector<std::unique_ptr<htmlElement>> children_;
+    std::vector<htmlElement*> children_;
 
     std::string repeat(const std::string& str, const size_t& times);
 
 public:
     // Getters and Setters
     int get_tab_index();
-    void set_tab_index(const int& val);
+    void set_tab_index(const int& tabIndex);
     std::string get_type();
-    void set_type(const std::string& val);
+    void set_type(const std::string& type);
     std::string get_text();
-    void set_text(const std::string& val);
+    void set_text(const std::string& text);
     std::map<std::string, std::string> get_attribues();
-    void set_attributes(const std::map<std::string, std::string>& val);
+    void set_attributes(const std::map<std::string, std::string>& attributes);
 
     // Children access
-    std::vector<std::unique_ptr<htmlElement>>& get_children();
-    void set_children(std::vector<std::unique_ptr<htmlElement>>&& val); // move-based
+    std::vector<htmlElement*>& get_children();
+    void set_children(std::vector<htmlElement*>& children);
 
     // Attribute methods
-    void set_attribute(const std::string& key, const std::string& val);
+    void set_attribute(const std::string& key, const std::string& value);
     void remove_attribute(const std::string& key);
 
     // Child management
-    void add_child(std::unique_ptr<htmlElement> child);
+    void add_child(htmlElement* child);
     void remove_child(size_t index);
     void clear_children();
 
@@ -63,9 +75,12 @@ public:
     htmlElement(const int& tabIndex, const std::string& type);
     htmlElement(const int& tabIndex, const std::string& type, const std::string& text);
     htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes);
-    htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children);
+    htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<htmlElement*>& children);
     htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes);
-    htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children);
+    htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<htmlElement*>& children);
+
+    // Destructor
+    ~htmlElement();
 
     // Render
     bool htmlRender(std::ostream& stream);

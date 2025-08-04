@@ -1,48 +1,6 @@
 #include "html.h"
 
-// Getters and Setters
-int htmlElement::get_tab_index() { return tabIndex_; }
-void htmlElement::set_tab_index(const int& val) { tabIndex_ = val; }
-
-std::string htmlElement::get_type() { return type_; }
-void htmlElement::set_type(const std::string& val) { type_ = val; }
-
-std::string htmlElement::get_text() { return text_; }
-void htmlElement::set_text(const std::string& val) { text_ = val; }
-
-std::map<std::string, std::string> htmlElement::get_attribues() { return attributes_; }
-void htmlElement::set_attributes(const std::map<std::string, std::string>& val) { attributes_ = val; }
-
-std::vector<std::unique_ptr<htmlElement>>& htmlElement::get_children() { return children_; }
-void htmlElement::set_children(std::vector<std::unique_ptr<htmlElement>>&& val) { children_ = std::move(val); }
-
-// Attribute methods
-void htmlElement::set_attribute(const std::string& key, const std::string& val) {
-    attributes_[key] = val;
-}
-
-void htmlElement::remove_attribute(const std::string& key) {
-    attributes_.erase(key);
-}
-
-// Child methods
-void htmlElement::add_child(std::unique_ptr<htmlElement> child) {
-    children_.push_back(std::move(child));
-}
-
-void htmlElement::remove_child(size_t index) {
-    if (index < children_.size()) {
-        children_.erase(children_.begin() + index);
-    }
-}
-
-void htmlElement::clear_children() {
-    children_.clear();
-}
-
 // Constructors
-htmlElement::htmlElement() {}
-
 htmlElement::htmlElement(const int& tabIndex, const std::string& type)
     : tabIndex_(tabIndex), type_(type) {}
 
@@ -52,24 +10,27 @@ htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std
 htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes)
     : tabIndex_(tabIndex), type_(type), text_(text), attributes_(attributes) {}
 
-htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children)
-    : tabIndex_(tabIndex), type_(type), text_(text), attributes_(attributes), children_(std::move(children)) {}
+htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<htmlElement*>& children)
+    : tabIndex_(tabIndex), type_(type), text_(text), attributes_(attributes), children_(children) {}
 
 htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes)
     : tabIndex_(tabIndex), type_(type), attributes_(attributes) {}
 
-htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<std::unique_ptr<htmlElement>>&& children)
-    : tabIndex_(tabIndex), type_(type), attributes_(attributes), children_(std::move(children)) {}
+htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<htmlElement*>& children)
+    : tabIndex_(tabIndex), type_(type), attributes_(attributes), children_(children) {}
 
-// Render function
-/* Example
-htmlElement root;
-root.HTML_Render(std::cout); // For output to terminal
-std::ofstream file("output.txt"); // For output to file
-if ( file.is_open() )
-    root.HTML_Render(file);
-file.close();
-*/
+// Destructor, will also delete all children
+htmlElement::~htmlElement() {
+    for ( auto child : children_ ) {
+        delete child;
+    }
+    
+    // Debug line
+    //std::cout << "Deleting: " << type_ << " at tab index: " << tabIndex_ << std::endl;
+    return;
+}
+
+// Render
 bool htmlElement::htmlRender(std::ostream& stream) {
     stream << repeat("\t", tabIndex_) << "<" << type_;
     for (const auto& [key, value] : attributes_) {
@@ -87,6 +48,81 @@ bool htmlElement::htmlRender(std::ostream& stream) {
 
     stream << repeat("\t", tabIndex_) << "</" << type_ << ">\n";
     return true;
+}
+
+
+// Getters and Setters
+int htmlElement::get_tab_index() {
+    return tabIndex_;
+}
+
+void htmlElement::set_tab_index(const int& tabIndex) {
+    tabIndex_ = tabIndex;
+}
+
+std::string htmlElement::get_type() {
+    return type_;
+}
+
+void htmlElement::set_type(const std::string& type) {
+    type_ = type;
+}
+
+std::string htmlElement::get_text() {
+    return text_;
+}
+
+void htmlElement::set_text(const std::string& text) {
+    text_ = text;
+}
+
+std::map<std::string, std::string> htmlElement::get_attribues() {
+    return attributes_;
+}
+
+void htmlElement::set_attributes(const std::map<std::string, std::string>& attributes) {
+    attributes_ = attributes;
+}
+
+// Children access
+std::vector<htmlElement*>& htmlElement::get_children() {
+    return children_;
+}
+
+void htmlElement::set_children(std::vector<htmlElement*>& children) {
+    children_ = children;
+}
+
+// Attribute methods
+void htmlElement::set_attribute(const std::string& key, const std::string& value) {
+    attributes_[key] = value;
+}
+
+void htmlElement::remove_attribute(const std::string& key) {
+    if ( attributes_.find(key) != attributes_.end() ) { 
+        attributes_.erase(key);
+    }
+    else {
+        throw htmlError("No attribute of type "  + key + ".");
+    }
+}
+
+// Child management
+void htmlElement::add_child(htmlElement* child) {
+    children_.push_back(child);
+}
+
+void htmlElement::remove_child(size_t index) {
+    if ( children_.size() < index ) {
+        children_.erase(children_.begin() + index);
+    }
+    else {
+        throw std::out_of_range("Index does not exist for children_");
+    }
+}
+
+void htmlElement::clear_children() {
+    children_.clear();
 }
 
 std::string htmlElement::repeat(const std::string& str, const size_t& times) {

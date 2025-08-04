@@ -52,6 +52,6 @@
 
 [I am a link to GitHub](https://github.com/)
 
-![I am an image](../../media/logo.png)
+![I am an image](../../media/KolibriBackground.png)
 
 This is `code` and an [link to GitHub](https://github.com/) inline.

@@ -1,4 +1,4 @@
-# MarkDown Render
+# RENDER.md
 
 A program for rendering a markdown file to a html file locally, comes with some customization. This program will accpet either .md files or .mdl ( Markdown Local )
 

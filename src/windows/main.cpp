@@ -4,10 +4,11 @@
 #include <fstream>
 
 int main() {
-    // Test for html.h
-    auto root = std::make_unique<htmlElement>(0, "div");
-    auto child = std::make_unique<htmlElement>(1, "p", "I am a paragraph");
-    root->add_child(std::move(child));
+    htmlElement* root = new htmlElement(0, "div");
+    htmlElement* child = new htmlElement(1, "p", "I am a paragraph");
+    root->add_child(child);
     root->htmlRender(std::cout);
+
+    delete root;
     return 0;
 }

@@ -10,3 +10,6 @@ src/linx/
 # Build files within src
 src/windows/build/
 src/linux/build/
+
+# Notes
+./NOTES.md

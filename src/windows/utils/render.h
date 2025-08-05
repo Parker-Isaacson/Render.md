@@ -24,7 +24,7 @@ class mdRender {
 private:
     std::istream& inStream_;
     std::ostream& outStream_ = std::cout;
-    htmlElement root_;
+    htmlElement* root_;
 
     // Attributes that originate from Adjustmnets, handled at the start of the render
     // No getters or setters as these should be writen into the markdown or passed as parameters
@@ -40,16 +40,16 @@ private:
 
 public:
     // Constructors
-    mdRender(std::istream& inStream, const htmlElement& root);
-    mdRender(std::istream& inStream, std::ostream& outStream, const htmlElement& root);
+    mdRender(std::istream& inStream, htmlElement* root);
+    mdRender(std::istream& inStream, std::ostream& outStream, htmlElement* root);
 
     // Rendering Methods
-    void render(); // Bypass because void render(htmlElement& parent = root_); is not allowed :(
-    void render(htmlElement& parent);
-    void renderText(htmlElement& parent, std::string& line); // Checks a give line for Bold, Italics, Code, Link, or Image
-    void renderHeading(htmlElement& parent, std::string& line);
-    void renderBlockQuote(htmlElement& parent, std::string& line);
-    void renderList(htmlElement& parent, std::vector<std::string>& lines);
+    void render(); 
+    void render(htmlElement* parent);
+    void renderText(htmlElement* parent, std::string& line); // Checks a give line for Bold, Italics, Code, Link, or Image
+    void renderHeading(htmlElement* parent, std::string& line);
+    void renderBlockQuote(htmlElement* parent, std::string& line);
+    void renderList(htmlElement* parent, std::vector<std::string>& lines);
 
     // Method for outputing
     void output(std::ostream& outStream_ = std::cout);

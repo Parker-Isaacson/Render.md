@@ -40,6 +40,7 @@ As of now the syntax will be strict:
 - Horizontal Rules must start the line and be the only elemet on a line.
 - Links and Images must be padded with at least 1 space around them.
 - A single blank line will insert a `<br>`, see example 1. If there is no blank line text will be placed in the same `<p>` tag.
+- Nesting is only permitted with lists
 
 ## Adjustments
 

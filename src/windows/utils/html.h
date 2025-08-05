@@ -43,7 +43,7 @@ private:
     std::string type_ = "div";
     std::string text_ = "";
     std::map<std::string, std::string> attributes_;
-    std::vector<htmlElement*> children_;
+    std::vector<htmlElement*> children_; // std::unique_ptr would be better, but can be changed later
 
     std::string repeat(const std::string& str, const size_t& times);
 

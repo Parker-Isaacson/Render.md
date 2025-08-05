@@ -28,24 +28,6 @@
   - I am a element of a nested unordered list
   - I am a element of a nested unordered list
 
-1. I am an element of an ordered list
-  1. I am a element of a nested ordered list
-2. I am an element of an ordered list
-  1. I am a element of a nested ordered list
-  2. I am a element of a nested ordered list
-
-- I am an element of an unordered list
-  1. I am a element of a nested ordered list
-- I am an element of an unordered list
-  1. I am a element of a nested ordered list
-  2. I am a element of a nested ordered list
-
-1. I am an element of an ordered list
-  - I am a element of a nested unordered list
-2. I am an element of an ordered list
-  - I am a element of a nested unordered list
-  - I am a element of a nested unordered list
-
 `code`
 
 ---

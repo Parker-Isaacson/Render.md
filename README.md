@@ -21,7 +21,6 @@ The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.or
 - Itialic `*italic*`
 - Blockquote `> blockquote`
 - Lists
-  - Ordered `1. Item`
   - Unordered `- Item`
 - Code `` `code` ``
 - Horizontal Rules `---`
@@ -38,7 +37,6 @@ As of now the syntax will be strict:
 - Blockqutoes \> must start the line, a depth of 1 block quotes is the limit.
 - Lists must start the line, by default, to have nested lists 2 spaces are needed, this can be changed by adjusting `Tab Width`.
   - Indent Mode may be added later, but for now just use spaces and adjust your editors settings.
-- Ordered lists must go in ascending order, and use integer values only.
 - Horizontal Rules must start the line and be the only elemet on a line.
 - Links and Images must be padded with at least 1 space around them.
 - A single blank line will insert a `<br>`, see example 1. If there is no blank line text will be placed in the same `<p>` tag.

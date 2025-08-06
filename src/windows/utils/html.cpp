@@ -1,6 +1,8 @@
 #include "html.h"
 
 // Constructors
+htmlElement::htmlElement() {}
+
 htmlElement::htmlElement(const int& tabIndex, const std::string& type)
     : tabIndex_(tabIndex), type_(type) {}
 
@@ -18,6 +20,9 @@ htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std
 
 htmlElement::htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<htmlElement*>& children)
     : tabIndex_(tabIndex), type_(type), attributes_(attributes), children_(children) {}
+
+htmlElement::htmlElement(const int& tabIndex, const std::string& type, std::vector<htmlElement*>& children)
+    : tabIndex_(tabIndex), type_(type), children_(children) {}
 
 // Destructor, will also delete all children
 htmlElement::~htmlElement() {

@@ -19,16 +19,26 @@ void mdRender::render(htmlElement* parent) {
         // Might need to adjust how the logic here works :3
 }
 
-void mdRender::renderText(htmlElement* parent, std::string& line) {
+// Just returns the text that should be output from the line, up to the caller to handle it
+std::string mdRender::renderText(std::string& line) {
     // This is another heavy function
     // Must handle Bold Italics Code, link and Images ( inline )
         // Bold or Italics, just insert a <b> or <i> into the string that will be placed
         // Code, need to change css to have the a new div inline with the text
         // Link and Images, pretty much just change what gets sent to the buffer
+    
+    return line;
 }
 
 void mdRender::renderHeading(htmlElement* parent, std::string& line) {
     // Simple one, just count # and then send the rest to this->renderText(header, remainingLine)
+    size_t count = line.find_first_not_of('#'); // I love this <3
+
+    std::string remainingLine = line.substr(count + 1);
+
+    htmlElement* heading = new htmlElement(parent->get_tab_index() + 1, "h" + std::to_string(count), renderText(remainingLine));
+
+    parent->add_child(heading);
 }
 
 void mdRender::renderBlockQuote(htmlElement* parent, std::string& line) {
@@ -45,7 +55,7 @@ void mdRender::renderList(htmlElement* parent, std::vector<std::string>& lines) 
 }
 
 // Output method
-void mdRender::output(std::ostream& outStream_ = std::cout) {
+void mdRender::output(std::ostream& outStream_) {
     root_->htmlRender(outStream_);
     delete root_;
 }

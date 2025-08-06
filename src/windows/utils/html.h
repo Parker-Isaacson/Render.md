@@ -79,6 +79,7 @@ public:
     htmlElement(const int& tabIndex, const std::string& type, const std::string& text, const std::map<std::string, std::string>& attributes, std::vector<htmlElement*>& children);
     htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes);
     htmlElement(const int& tabIndex, const std::string& type, const std::map<std::string, std::string>& attributes, std::vector<htmlElement*>& children);
+    htmlElement(const int& tabIndex, const std::string& type, std::vector<htmlElement*>& children);
 
     // Destructor
     ~htmlElement();

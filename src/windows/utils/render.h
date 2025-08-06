@@ -46,7 +46,7 @@ public:
     // Rendering Methods
     void render(); 
     void render(htmlElement* parent);
-    void renderText(htmlElement* parent, std::string& line); // Checks a give line for Bold, Italics, Code, Link, or Image
+    std::string renderText(std::string& line); // Checks a give line for Bold, Italics, Code, Link, or Image
     void renderHeading(htmlElement* parent, std::string& line);
     void renderBlockQuote(htmlElement* parent, std::string& line);
     void renderList(htmlElement* parent, std::vector<std::string>& lines);

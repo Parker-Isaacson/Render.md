@@ -8,10 +8,3 @@ The following can be used to build and executed, while inside the windows direct
 g++ --std=c++17 main.cpp utils/html.cpp -o build/mdrender
 .\build\mdrender.exe
 ```
-
-If you are using command prompt:
-
-```CMD
-g++ --std=c++17 main.cpp utils/html.cpp -o build/mdrender
-biuld\mdrender.exe
-```

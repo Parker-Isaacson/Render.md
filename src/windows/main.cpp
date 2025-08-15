@@ -10,10 +10,11 @@ int main(int argc, char** argv) {
     htmlElement* root = new htmlElement();
 
     mdRender renderObj(inStream, root); // Above to satisfity the compiler
+    renderObj.render(root);
+    
+    std::string line = "> I am a test heading";
 
-    std::string line = "### I am a test heading";
-
-    renderObj.renderHeading(root, line);
+    renderObj.renderBlockQuote(root, line);
 
     root->htmlRender(std::cout);
 

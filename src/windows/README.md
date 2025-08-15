@@ -5,6 +5,6 @@ This is the directory for windows build. As other files are added these commands
 The following can be used to build and executed, while inside the windows directory and in powershell:
 
 ```PS1
-g++ --std=c++17 main.cpp utils/html.cpp -o build/mdrender
+g++ --std=c++17 main.cpp utils/html.cpp utils/render.cpp utils/colors.cpp -o build/mdrender
 .\build\mdrender.exe
 ```

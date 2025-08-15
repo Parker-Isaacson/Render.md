@@ -29,9 +29,7 @@ htmlElement::~htmlElement() {
     for ( auto child : children_ ) {
         delete child;
     }
-    
-    // Debug line
-    //std::cout << "Deleting: " << type_ << " at tab index: " << tabIndex_ << std::endl;
+
     return;
 }
 

@@ -85,6 +85,29 @@ void mdRender::renderList(htmlElement* parent, std::vector<std::string>& lines) 
         // ^index % tabWidth_ == 0 ? "Valid depth" : "invalid depth"
         // tabIndex = ^index / tabWidth_ // So we know if it is one level nested or more
         // If nested is found just call this->renderList with the lines that are nested, should support infinite depth
+    if ( lines.empty() ) {
+        throw renderError("Empty list.");
+        return;
+    }
+
+    if ( lines[0][0] != '-' || lines[0][1] != ' ' ) {
+        throw renderError("Bad List Format.");
+        return;
+    }
+
+    htmlElement* list = new htmlElement(parent->get_tab_index() + 1, "ul", styles_["list"]);
+
+    for ( std::string line : lines ) {
+        if ( line[0] != '-' || line[1] != ' ' ) {
+            throw renderError("Bad line in list.");
+            break; // Just leave this loop, will add whatever is in the current list to parent
+        }
+        std::string remainingLine = line.substr(2);
+        htmlElement* item = new htmlElement(list->get_tab_index() + 1, "li", renderText(remainingLine), styles_["list"]);
+        list->add_child(item);
+    }
+
+    parent->add_child(list);
 }
 
 // Output method

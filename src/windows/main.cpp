@@ -13,12 +13,11 @@ int main(int argc, char** argv) {
     renderObj.render(root);
     
     std::string line = "> I am a test heading";
+    std::vector<std::string> lines = {"- Item 1", "- Item 2", "- Item 3"};
 
-    renderObj.renderBlockQuote(root, line);
+    renderObj.renderList(root, lines);
 
-    root->htmlRender(std::cout);
-
-    delete root;
-
+    renderObj.output(std::cout);
+    
     return 0;
 }

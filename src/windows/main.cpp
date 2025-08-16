@@ -10,12 +10,14 @@ int main(int argc, char** argv) {
     htmlElement* root = new htmlElement();
 
     mdRender renderObj(inStream, root); // Above to satisfity the compiler
-    renderObj.render(root);
+    renderObj.render();
     
-    std::string line = "> I am a test heading";
+    std::string line = "I am a line with **bold** and *italic* and ***both***. I also have a link [Click me!](https://github.parkerisaacson.com) and an image ![background](../../media/KolibriBackground.png).";
     std::vector<std::string> lines = {"- Item 1", "- Item 2", "- Item 3"};
 
-    renderObj.renderList(root, lines);
+    renderObj.renderText(line);
+    
+    std::cout << line << std::endl;
 
     renderObj.output(std::cout);
     

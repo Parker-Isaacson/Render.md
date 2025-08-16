@@ -1,5 +1,24 @@
 #include "render.h"
 
+// Utility Functions
+size_t countLeadingChar(const std::string& s, char c) {
+    size_t count = 0;
+    while ( count < s.size() && s[count] == c ) {
+        count++;
+    }
+    return count;
+}
+
+size_t countTrailingChar(const std::string& s, char c) {
+    size_t count = 0;
+    size_t i = s.size();
+    while ( i > 0 && s[i - 1] == c ) {
+        count++;
+        i--;
+    }
+    return count;
+}
+
 // Constructors
 mdRender::mdRender(std::istream& inStream, htmlElement* root)
     : inStream_(inStream), root_(root) {}
@@ -34,19 +53,101 @@ void mdRender::render(htmlElement* parent) {
 }
 
 // Just returns the text that should be output from the line, up to the caller to handle it
-std::string mdRender::renderText(std::string& line) {
-    // This is another heavy function
-    // Must handle Bold Italics Code, link and Images ( inline )
-        // Bold or Italics, just insert a <b> or <i> into the string that will be placed
-        // Code, need to change css to have the a new div inline with the text
-        // Link and Images, pretty much just change what gets sent to the buffer
-    
-    return line;
+void mdRender::renderText(std::string& line) {
+    bool isItalics = false;
+    bool isBold = false;
+    bool isBoth = false;
+
+    size_t pos = line.find("***"); // We first look for ***, or both
+    while ( pos != std::string::npos ) {
+        line.erase(pos, 3);
+        if ( isBoth ) {
+            line.insert(pos, "</b></i>"); // We need to close at where we found ***
+            isBoth = false;
+        } else {
+            line.insert(pos, "<b><i>"); // We need to open at where we found ***
+            isBoth = true;
+        }
+        pos = line.find("***", pos + 1);
+    }
+
+    pos = line.find("**"); // We first look for **, or bold
+    while ( pos != std::string::npos ) {
+        line.erase(pos, 2);
+        if ( isBold ) {
+            line.insert(pos, "</b>"); // We need to close at where we found **
+            isBold = false;
+        } else {
+            line.insert(pos, "<b>"); // We need to open at where we found **
+            isBold = true;
+        }
+        pos = line.find("**", pos + 1);
+    }
+
+    pos = line.find("*"); // We first look for *, or italics
+    while ( pos != std::string::npos ) {
+        line.erase(pos, 1);
+        if ( isItalics ) {
+            line.insert(pos, "</i>"); // We need to close at where we found *
+            isItalics = false;
+        } else {
+            line.insert(pos, "<i>"); // We need to open at where we found *
+            isItalics = true;
+        }
+        pos = line.find("*", pos + 1);
+    }
+
+    if ( isBoth ) { // Just in case they are not closed, we close them at the end of the line
+        line += "</b></i>";
+    } else {
+        if ( isBold ) {
+            line += "</b>";
+        } 
+        if ( isItalics ) {
+            line += "</i>";
+        }
+    }
+
+    // Now we need to look for links or images
+    pos = line.find("![");
+    while ( pos != std::string::npos ) { // We found a image
+        size_t closingBracket = line.find(']', pos);
+        size_t closingParen = line.find(')', pos);
+
+        if ( closingBracket == std::string::npos || closingParen == std::string::npos ) {
+            throw renderError("Bad image, as of now try and avoid using ![.");
+        }
+
+        std::string alt = line.substr(pos + 2, closingBracket - pos - 2);
+        std::string image = line.substr(closingBracket + 2, closingParen - closingBracket - 2);
+
+        line.erase(pos, closingParen - pos + 1);
+        line.insert(pos, "<img src=\"" + image + "\" alt=\"" + alt + "\">");
+
+        pos = line.find("![", pos + 1);
+    }
+
+    pos = line.find('[');
+    while ( pos != std::string::npos ) { // We found a link
+        size_t closingBracket = line.find(']', pos);
+        size_t closingParen = line.find(')', pos);
+
+        if ( closingBracket == std::string::npos || closingParen == std::string::npos ) {
+            throw renderError("Bad link, as of now try and avoid using [.");
+        }
+
+        std::string inside = line.substr(pos + 1, closingBracket - pos - 1);
+        std::string link = line.substr(closingBracket + 2, closingParen - closingBracket - 2);
+
+        line.erase(pos, closingParen - pos + 1);
+        line.insert(pos, "<a href=\"" + link + "\">" + inside + "</a>");
+
+        pos = line.find('[', pos + 1);
+    }
 }
 
 void mdRender::renderHeading(htmlElement* parent, std::string& line) {
-    // Simple one, just count # and then send the rest to this->renderText(header, remainingLine)
-    size_t count = line.find_first_not_of('#'); // I love this <3
+    size_t count = countLeadingChar(line, '#'); // counts the number of '#'
 
     if ( count < 1 || count > 6 ) {
         throw renderError("Bad Count for Heading.");
@@ -55,23 +156,26 @@ void mdRender::renderHeading(htmlElement* parent, std::string& line) {
 
     std::string remainingLine = line.substr(count + 1);
 
-    htmlElement* heading = new htmlElement(parent->get_tab_index() + 1, "h" + std::to_string(count), renderText(remainingLine), styles_["heading"]);
+    renderText(remainingLine);
+
+    htmlElement* heading = new htmlElement(parent->get_tab_index() + 1, "h" + std::to_string(count), remainingLine, styles_["heading"]);
 
     parent->add_child(heading);
 }
 
 void mdRender::renderBlockQuote(htmlElement* parent, std::string& line) {
-    // Since nesting is not permited outside of lists, just check that the line is started with "> " and send the rest to this->renderText(blockQuote, remainingLine)
-    if ( line[0] != '>' && line[1] != ' ' ) {
+    if ( line[0] != '>' || line[1] != ' ' ) {
         throw renderError("Bad Block Quote.");
         return;
     }
 
     std::string remainingLine = line.substr(2);
 
+    renderText(remainingLine);
+
     htmlElement* quote = new htmlElement(parent->get_tab_index() + 1, "div", styles_["blockquote"]);
 
-    htmlElement* paragraph = new htmlElement(quote->get_tab_index() + 1, "p", renderText(remainingLine), styles_["paragraph"]);
+    htmlElement* paragraph = new htmlElement(quote->get_tab_index() + 1, "p", remainingLine, styles_["paragraph"]);
 
     quote->add_child(paragraph);
 
@@ -79,12 +183,6 @@ void mdRender::renderBlockQuote(htmlElement* parent, std::string& line) {
 }
 
 void mdRender::renderList(htmlElement* parent, std::vector<std::string>& lines) {
-    // This is another heavy function
-    // Must only handle <ul>?
-    // https://cplusplus.com/reference/string/string/find_first_not_of/ -> this might be useful for finding tabs
-        // ^index % tabWidth_ == 0 ? "Valid depth" : "invalid depth"
-        // tabIndex = ^index / tabWidth_ // So we know if it is one level nested or more
-        // If nested is found just call this->renderList with the lines that are nested, should support infinite depth
     if ( lines.empty() ) {
         throw renderError("Empty list.");
         return;
@@ -103,7 +201,8 @@ void mdRender::renderList(htmlElement* parent, std::vector<std::string>& lines) 
             break; // Just leave this loop, will add whatever is in the current list to parent
         }
         std::string remainingLine = line.substr(2);
-        htmlElement* item = new htmlElement(list->get_tab_index() + 1, "li", renderText(remainingLine), styles_["list"]);
+        renderText(remainingLine);
+        htmlElement* item = new htmlElement(list->get_tab_index() + 1, "li", remainingLine, styles_["list"]);
         list->add_child(item);
     }
 

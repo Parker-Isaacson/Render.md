@@ -50,9 +50,14 @@ void mdRender::render(htmlElement* parent) {
     };
     // Should go line by line and determine what other function needs to be called
         // Might need to adjust how the logic here works :3
+    std::string line;
+    while ( getline(inStream_, line) ) {
+        std::cout << line << std::endl;
+    }
 }
 
-// Just returns the text that should be output from the line, up to the caller to handle it
+// There is a faster way to write this, put everything in 1 for loop that looks letter by letter.
+// Then look for specific things and continue. Should lower the hidden coeffiecnt of the big O.
 void mdRender::renderText(std::string& line) {
     bool isItalics = false;
     bool isBold = false;

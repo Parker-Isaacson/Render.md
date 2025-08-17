@@ -14,26 +14,18 @@
 
 ###### Heading 6
 
-**I am Bold text**
+**I am Bold text** and *I am Italicized test* and ***I am both Bold and Italicized*** and [I am a link to GitHub](https://github.com/)
 
-*I am Italicized test*
+---
 
-***I am both Bold and Italicized***
+![I am an image](../../media/KolibriBackground.png)
 
 > I am a blockquote
 
 - I am an element of an unordered list
-  - I am a element of a nested unordered list
+- I am a element of a nested unordered list
 - I am an element of an unordered list
-  - I am a element of a nested unordered list
-  - I am a element of a nested unordered list
+- I am a element of a nested unordered list
+- I am a element of a nested unordered list
 
 `code`
-
----
-
-[I am a link to GitHub](https://github.com/)
-
-![I am an image](../../media/KolibriBackground.png)
-
-This is `code` and an [link to GitHub](https://github.com/) inline.

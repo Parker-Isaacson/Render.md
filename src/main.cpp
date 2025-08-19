@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
     std::string inputFile = "input.md";
     std::string outputFile = "markdown.html";
-    for ( int i = 1; i < argc; i++ ) {
+    for ( int i = 1; i < argc; i++ ) { // Parse through the arguements provided
         std::string param = std::string(argv[i]);
         if ( param == "--help" ) {
             std::cout << "See https://github.com/Parker-Isaacson/Render.md for help!" << std::endl;
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
             std::cout << "Bad Input Param: " << param << ". Skipping." << "\n";
         }
     }
-    htmlElement* root = new htmlElement();
+    htmlElement* root = new htmlElement(); // Created out here so it can be deleted just in case
     try {
         std::ifstream inStream(inputFile);
         std::ofstream outStream(outputFile);

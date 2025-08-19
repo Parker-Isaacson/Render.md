@@ -35,7 +35,7 @@ void mdRender::render(htmlElement* parent) {
     // Load the file into memory
     std::vector<std::string> lines;
     std::string line;
-    while ( getline(inStream_, line) ) {
+    while ( getline(inStream_, line) ) { // Loads file into memory
         lines.push_back(line);
     }
     if ( lines.size() < 1) {
@@ -93,7 +93,7 @@ void mdRender::render(htmlElement* parent) {
                 listLines.push_back(lines[i]);
             }
             renderList(parent, listLines);
-        } else if ( lines[i] == "" ) {
+        } else if ( lines[i] == "" ) { // Blank Line
             continue;
         } else {
             line = lines[i];

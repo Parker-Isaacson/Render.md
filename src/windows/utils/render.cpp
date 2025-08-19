@@ -32,27 +32,75 @@ void mdRender::render() {
 }
 
 void mdRender::render(htmlElement* parent) {
+    // Load the file into memory
+    std::vector<std::string> lines;
+    std::string line;
+    while ( getline(inStream_, line) ) {
+        lines.push_back(line);
+    }
+    if ( lines.size() < 1) {
+        throw renderError("No Lines in File!");
+        return;
+    }
+    int i = 0;
     // Read in the Adjustments and set them here
-
+    for (; lines[i][0] == '?' && i < lines.size(); i++ ) {
+        size_t pos = lines[i].find("==");
+        std::string adjustmentName = lines[i].substr(1, pos - 1);
+        std::string adjustmentValue = lines[i].substr(pos + 2);
+        // I cant switch a std::string ;-;
+        if ( adjustmentName == "tab-width" ) {
+            tabWidth_ = std::stoi(adjustmentValue);
+        } else if ( adjustmentName == "text-color" ) {
+            textColor_ = adjustmentValue;
+        } else if ( adjustmentName == "background-color" ) {
+            backgroundColor_ = adjustmentValue;
+        } else if ( adjustmentName == "margin" ) {
+            margin_ = std::stoi(adjustmentValue);
+        } else if ( adjustmentName == "padding" ) {
+            padding_ = std::stoi(adjustmentValue);
+        } else {
+            throw renderError("Bad adjustment name!");
+            return;
+        }
+    }
     // Use the Adjustments to create the styles_
     std::string default_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + ";";
     std::string blockquote_ = "background-color: " + darkenColor(backgroundColor_, 0.15) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + "; border-left: 4px solid " + darkenColor(backgroundColor_, 0.3) + "; border-radius: 4px; padding-left: 2px;";
     std::string code_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: max(2px, " + std::to_string(padding_) + "); margin: " + std::to_string(margin_) + "; width: fit-content;";
+    std::string list_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_ + 10) + "; margin: " + std::to_string(margin_) + ";";
     styles_ = std::map<std::string, std::map<std::string, std::string>>{
         { "default", { { "style", default_ } } },
         { "heading",  { { "style", default_ } } },
         { "paragraph",  { { "style", default_ } } },
-        { "blockquote",  { { "style", blockquote_ } } },
-        { "list",  { { "style", default_ } } },
+        { "blockquote",  { { "style", blockquote_ + " width: fit-content;" } } },
+        { "list",  { { "style", list_ } } },
         { "item",  { { "style", default_ } } },
         { "code",  { { "style", code_ } } },
         { "code_content", { { "style", default_ + " width: fit-content;" } } }
     };
-    // Should go line by line and determine what other function needs to be called
-        // Might need to adjust how the logic here works :3
-    std::string line;
-    while ( getline(inStream_, line) ) {
-        std::cout << line << std::endl;
+    // Now we check line by line for what it is
+    for (; i < lines.size(); i++ ) {
+        if ( lines[i] == "---" ) { // hr
+            parent->add_child(new htmlElement(parent->get_tab_index() + 1, "hr"));
+        } else if ( lines[i][0] == '#' ) { // Heading
+            renderHeading(parent, lines[i]);
+        } else if ( lines[i][0] == '>' ) { // Blockquote
+            renderBlockQuote(parent, lines[i]);
+        } else if ( lines[i][0] == '-' ) { // List
+            std::vector<std::string> listLines;
+            for (; i < lines.size() && lines[i][0] == '-'; i++) {
+                listLines.push_back(lines[i]);
+            }
+            renderList(parent, listLines);
+        } else if ( lines[i] == "" ) {
+            continue;
+        } else {
+            line = lines[i];
+            renderText(line);
+            htmlElement* paragraph = new htmlElement(parent->get_tab_index() + 1, "p", line, styles_["paragraph"]);
+            parent->add_child(paragraph);
+        }
     }
 }
 
@@ -178,9 +226,9 @@ void mdRender::renderBlockQuote(htmlElement* parent, std::string& line) {
 
     renderText(remainingLine);
 
-    htmlElement* quote = new htmlElement(parent->get_tab_index() + 1, "div", styles_["blockquote"]);
+    htmlElement* quote = new htmlElement(parent->get_tab_index() + 1, "div", styles_["default"]);
 
-    htmlElement* paragraph = new htmlElement(quote->get_tab_index() + 1, "p", remainingLine, styles_["paragraph"]);
+    htmlElement* paragraph = new htmlElement(quote->get_tab_index() + 1, "p", remainingLine, styles_["blockquote"]);
 
     quote->add_child(paragraph);
 

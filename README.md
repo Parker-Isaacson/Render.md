@@ -43,11 +43,10 @@ As of now the syntax will be strict:
 - All elements that start a line must be followed by a space, and have no spaces before them.
 - No nesting is allowed.
 - Horizontal Rules must be the only elemet on a line.
-- If two lines are not separated by a blank line then they will be placed into the same paragraph.
 
 ## Adjustments
 
-Adjustments are things that change how the renderer will look through the code. Afther the block of adjustments must be at leat 1 blank line. As of now the following are possibe:
+Adjustments are things that change how the renderer will look through the code. As of now the following are possibe:
 - Tab Width
   - This is the amount of spaces 1 Tab will be asumed to have.
   - Can be changed with `--tab-width` or by adding `?tab-width==` to the top of the markdown file.

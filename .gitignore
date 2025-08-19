@@ -3,13 +3,3 @@
 
 # Testing direcotry
 test/
-
-# REMOVE: Linux as it is not built
-src/linx/
-
-# Build files within src
-src/windows/build/
-src/linux/build/
-
-# Notes
-NOTES.md

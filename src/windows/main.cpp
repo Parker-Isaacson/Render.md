@@ -12,7 +12,8 @@ int main(int argc, char** argv) {
     mdRender renderObj(inStream, root); // Above to satisfity the compiler
     renderObj.render();
 
-    renderObj.output(std::cout);
+    std::ofstream outStream("../../test/markdown.html");
+    renderObj.output(outStream);
     
     return 0;
 }

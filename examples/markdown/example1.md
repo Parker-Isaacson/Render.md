@@ -39,3 +39,9 @@ I am example `code`!
 - [ ] Task 1
 - [x] Task 2
 - [ ] Task 3
+
+```
+I am some fenced Code!
+I am some fenced Code!
+I am some fenced Code!
+```

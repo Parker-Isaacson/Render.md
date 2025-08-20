@@ -19,7 +19,7 @@ size_t countTrailingChar(const std::string& s, char c) {
     return count;
 }
 
-// Function to quickly print out a warning, just so I dont have to in code.
+// Function to quickly print out a warning
 void warn(const std::string& warning) {
     std::cout << "\033[38;5;208mWARNING:\033[0m " << warning << "\n";
 }
@@ -72,7 +72,7 @@ void mdRender::render(htmlElement* parent) {
     // Use the Adjustments to create the styles_
     std::string default_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + ";";
     std::string blockquote_ = "background-color: " + darkenColor(backgroundColor_, 0.15) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + "; border-left: 4px solid " + darkenColor(backgroundColor_, 0.3) + "; border-radius: 4px; padding-left: 2px;";
-    std::string code_ = "background-color: " + darkenColor(backgroundColor_, 0.3) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_ + 2) + "; margin: " + std::to_string(margin_) + "; border-radius: 4px;";
+    std::string code_ = "background-color: " + darkenColor(backgroundColor_, 0.3) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_ + 2) + "; margin: " + std::to_string(margin_) + "; border-radius: 4px; font-family: monospace;";
     std::string list_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_ + 10) + "; margin: " + std::to_string(margin_) + ";";
     styles_ = std::map<std::string, std::map<std::string, std::string>>{
         { "default", { { "style", default_ } } },
@@ -106,6 +106,14 @@ void mdRender::render(htmlElement* parent) {
                 listLines.push_back(lines[i]);
             }
             renderList(parent, listLines);
+        } else if ( lines[i] == "```" ) { // Fenced Code Block
+            std::vector<std::string> codeLines;
+            i += 1; // Jump top the actuall code
+            for (; i < lines.size() && lines[i] != "```"; i++ ) {
+                codeLines.push_back(lines[i]);
+            }
+            i += 1; // Jump off the code
+            renderFencedCode(parent, codeLines);
         } else if ( lines[i] == "" ) { // Blank Line
             continue;
         } else {
@@ -429,13 +437,26 @@ void mdRender::renderTaskList(htmlElement* parent, std::vector<std::string>& lin
         std::string remainingLine = line.substr(5);
         renderText(remainingLine);
         htmlElement* item = new htmlElement(list->get_tab_index() + 1, "li", styles_["item"]);
-        // TODO: Get this to chekc
         htmlElement* checkbox = new htmlElement(item->get_tab_index() + 1, "input",  remainingLine, ( line[3] == 'x' ) ? styles_["checked"] : styles_["task"] );
         item->add_child(checkbox);
         list->add_child(item);
     }
 
     parent->add_child(list);
+}
+
+
+void mdRender::renderFencedCode(htmlElement* parent, std::vector<std::string>& lines) {
+    std::string codeText;
+    for ( int i = 0; i < lines.size(); i++ ) {
+        if ( i + 1 < lines.size() ) {
+            codeText += lines[i] + "<br>";
+        } else {
+            codeText += lines[i];
+        }
+    }
+    htmlElement* paragraph = new htmlElement(parent->get_tab_index() + 1, "p", codeText, styles_["code"]);
+    parent->add_child(paragraph);
 }
 
 // Output method

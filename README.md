@@ -21,13 +21,13 @@ The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.or
 - Superscript `x^2^`
 - Highlight `==very important words==`
 - Code `` `code` ``
+- Fenced Code Blocks ```` ```code``` ````
 
 ## Unsupported Elements
 
 These markdown elements are currently not supported, though will be added at some point.
 - Order List `1. Item`
 - Tables
-- Fenced Code Blocks
 - Footnotes
 - Definition List
 
@@ -36,7 +36,7 @@ These markdown elements are currently not supported, though will be added at som
 Restrictions to how this will compile are strict.
 - All elements that start a line must be followed by a space, and have no spaces before them.
 - No nesting is allowed.
-- Horizontal Rules must be the only elemet on a line, other text in the line will be ignored.
+- Horizontal Rules must be the only elemet on a line. Along with the start and end for Fenced Code Blocks.
 - Heading ID's must be at the end of the line.
 
 ## Adjustments

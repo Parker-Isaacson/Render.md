@@ -18,6 +18,7 @@ The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.or
 - Strike Trough `~~The world is flat.~~`
 - Subscript `H~2~O`
 - Superscript `x^2^`
+- Highlight `==very important words==`
 
 ## Unsupported Elements
 
@@ -29,7 +30,6 @@ These markdown elements are currently not supported, though will be added at som
 - Footnotes
 - Definition List
 - Task List
-- Highlight
 
 ## Restrictions
 

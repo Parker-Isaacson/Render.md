@@ -161,11 +161,18 @@ void mdRender::renderText(std::string& line) {
         } else if ( line[i] == '~' ) {
             size_t closer = line.find('~', i + 1);
             if ( closer == std::string::npos )
-                throw renderError("Bad superscript, as of now try and avoid using ~.");
+                throw renderError("Bad subscript, as of now try and avoid using ~.");
             std::string inside = line.substr(i + 1, closer - ( i + 1 ) );
             result += "<sub>" + inside + "</sub>";
             i = closer + 1;
-        }else {
+        } else if ( line.compare(i, 2, "==") == 0 ) { // strikethrough
+            size_t closer = line.find("==", i + 1);
+            if ( closer == std::string::npos )
+                throw renderError("Bad highlight, as of now try and avoid using ==.");
+            std::string inside = line.substr(i + 2, closer - (i + 2));
+            result += "<mark>" + inside + "</mark>";
+            i = closer + 2;
+        } else {
             result.push_back(line[i]);
             i++;
         }

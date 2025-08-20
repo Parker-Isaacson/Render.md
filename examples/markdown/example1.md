@@ -35,3 +35,7 @@
 I need to ==highlight this text!==
 
 I am example `code`!
+
+- [ ] Task 1
+- [x] Task 2
+- [ ] Task 3

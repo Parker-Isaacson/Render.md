@@ -82,7 +82,9 @@ void mdRender::render(htmlElement* parent) {
         { "list",  { { "style", list_ } } },
         { "item",  { { "style", default_ } } },
         { "code",  { { "style", code_ } } },
-        { "code_content", { { "style", default_ + " width: fit-content;" } } }
+        { "taskList",  { { "style", list_ + " list-style: none;"} } },
+        { "task", { { "style", default_ }, { "type", "checkbox" } } },
+        { "checked", { { "style", default_ }, { "type", "checkbox" }, { "checked", "checked" } } }
     };
     // Now we check line by line for what it is
     for (; i < lines.size(); i++ ) {
@@ -92,6 +94,12 @@ void mdRender::render(htmlElement* parent) {
             renderHeading(parent, lines[i]);
         } else if ( lines[i][0] == '>' ) { // Blockquote
             renderBlockQuote(parent, lines[i]);
+        } else if ( lines[i].compare(0, 3, "- [") == 0 ) {
+            std::vector<std::string> listLines;
+            for (; i < lines.size() && lines[i].compare(0, 3, "- [") == 0; i++) {
+                listLines.push_back(lines[i]);
+            }
+            renderTaskList(parent, listLines);
         } else if ( lines[i][0] == '-' ) { // List
             std::vector<std::string> listLines;
             for (; i < lines.size() && lines[i][0] == '-'; i++) {
@@ -382,6 +390,36 @@ void mdRender::renderList(htmlElement* parent, std::vector<std::string>& lines) 
         std::string remainingLine = line.substr(2);
         renderText(remainingLine);
         htmlElement* item = new htmlElement(list->get_tab_index() + 1, "li", remainingLine, styles_["list"]);
+        list->add_child(item);
+    }
+
+    parent->add_child(list);
+}
+
+void mdRender::renderTaskList(htmlElement* parent, std::vector<std::string>& lines) {
+    if ( lines.empty() ) {
+        throw renderError("Empty list.");
+        return;
+    }
+
+    if ( lines[0].compare(0, 3, "- [") != 0 ) {
+        throw renderError("Bad Task List Format.");
+        return;
+    }
+
+    htmlElement* list = new htmlElement(parent->get_tab_index() + 1, "ul", styles_["taskList"]);
+
+    for ( std::string line : lines ) {
+        if ( line.compare(0, 3, "- [") != 0 ){
+            throw renderError("Bad line in list.");
+            break; // Just leave this loop, will add whatever is in the current list to parent
+        }
+        std::string remainingLine = line.substr(5);
+        renderText(remainingLine);
+        htmlElement* item = new htmlElement(list->get_tab_index() + 1, "li", styles_["item"]);
+        // TODO: Get this to chekc
+        htmlElement* checkbox = new htmlElement(item->get_tab_index() + 1, "input",  remainingLine, ( line[3] == 'x' ) ? styles_["checked"] : styles_["task"] );
+        item->add_child(checkbox);
         list->add_child(item);
     }
 

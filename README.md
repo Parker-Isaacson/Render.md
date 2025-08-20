@@ -12,6 +12,7 @@ The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.or
 - Blockquote `> blockquote`
 - Lists
   - Unordered `- Item`
+  - Task `- [ ] Task`
 - Horizontal Rules `---`
 - Link `[title](https://example.com)`
 - Image `![alt text](path/to/img.jpg)`
@@ -29,7 +30,6 @@ These markdown elements are currently not supported, though will be added at som
 - Fenced Code Blocks
 - Footnotes
 - Definition List
-- Task List
 
 ## Restrictions
 

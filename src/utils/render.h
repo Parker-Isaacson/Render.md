@@ -51,6 +51,7 @@ public:
     void renderHeading(htmlElement* parent, std::string& line);
     void renderBlockQuote(htmlElement* parent, std::string& line);
     void renderList(htmlElement* parent, std::vector<std::string>& lines);
+    void renderTaskList(htmlElement* parent, std::vector<std::string>& lines);
 
     // Method for outputing
     void output();

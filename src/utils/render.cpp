@@ -340,12 +340,24 @@ void mdRender::renderHeading(htmlElement* parent, std::string& line) {
         throw renderError("Bad Count for Heading.");
         return;
     }
+    
+    std::map<std::string, std::string> idStyle = styles_["heading"];
+    size_t idStart = line.find('{', count + 1);
+    
+    if ( idStart == std::string::npos ) { // No id
+        warn("No ID For Heading!");
+        idStart = 0;
+    } else { // id found
+        size_t idEnd = line.find('}', idStart + 1);
+        std::string id = line.substr(idStart + 2, idEnd - ( idStart + 2) );
+        idStyle["id"] = id;
+    }
 
-    std::string remainingLine = line.substr(count + 1);
+    std::string remainingLine = line.substr(count + 1, idStart - ( count + 1 ) );
 
     renderText(remainingLine);
 
-    htmlElement* heading = new htmlElement(parent->get_tab_index() + 1, "h" + std::to_string(count), remainingLine, styles_["heading"]);
+    htmlElement* heading = new htmlElement(parent->get_tab_index() + 1, "h" + std::to_string(count), remainingLine, idStyle);
 
     parent->add_child(heading);
 }

@@ -1,7 +1,7 @@
 ?tab-width==2
 ?text-color==#000000
 ?background-color==#ffffff
-# Heading 1
+# Heading 1 {#headingid}
 
 ## Heading 2
 

@@ -6,6 +6,7 @@ RENDER.md renders markdown files into html files locally, allowing for use for a
 
 The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.org/cheat-sheet/).
 - Headings `# Heading`
+  - ID's `# Heading {#id}`
 - Bold `**bold**`
 - Itialic `*italic*`
 - Blockquote `> blockquote`
@@ -14,6 +15,9 @@ The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.or
 - Horizontal Rules `---`
 - Link `[title](https://example.com)`
 - Image `![alt text](path/to/img.jpg)`
+- Strike Trough `~~The world is flat.~~`
+- Subscript `H~2~O`
+- Superscript `x^2^`
 
 ## Unsupported Elements
 
@@ -23,13 +27,9 @@ These markdown elements are currently not supported, though will be added at som
 - Tables
 - Fenced Code Blocks
 - Footnotes
-- Heading ID's
 - Definition List
-- Strike Trough
 - Task List
 - Highlight
-- Subscript
-- Superscript
 
 ## Restrictions
 
@@ -37,6 +37,7 @@ Restrictions to how this will compile are strict.
 - All elements that start a line must be followed by a space, and have no spaces before them.
 - No nesting is allowed.
 - Horizontal Rules must be the only elemet on a line, other text in the line will be ignored.
+- Heading ID's must be at the end of the line.
 
 ## Adjustments
 

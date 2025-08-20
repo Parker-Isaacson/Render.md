@@ -104,9 +104,84 @@ void mdRender::render(htmlElement* parent) {
     }
 }
 
+// This is the faster re-write
+void mdRender::renderText(std::string& line) {
+    std::string result;
+    result.reserve(line.size() * 2); // reserve extra for tags
+
+    bool isItalics = false;
+    bool isBold = false;
+    bool isBoth = false;
+
+    for (size_t i = 0; i < line.size(); ) {
+        if ( line.compare(i, 3, "***") == 0 ) { // both
+            result += (isBoth ? "</b></i>" : "<b><i>");
+            isBoth = !isBoth;
+            i += 3;
+        } else if ( line.compare(i, 2, "**") == 0 ) { // bold
+            result += (isBold ? "</b>" : "<b>");
+            isBold = !isBold;
+            i += 2;
+        } else if ( line[i] == '*' ) { // italics
+            result += (isItalics ? "</i>" : "<i>");
+            isItalics = !isItalics;
+            i++;
+        } else if ( line.compare(i, 2, "![") == 0 ) { // image
+            size_t closingBracket = line.find(']', i + 2);
+            size_t closingParen = line.find(')', closingBracket + 1);
+            if (closingBracket == std::string::npos || closingParen == std::string::npos)
+                throw renderError("Bad image, as of now try and avoid using ![.");
+            std::string alt = line.substr(i + 2, closingBracket - (i + 2));
+            std::string image = line.substr(closingBracket + 2, closingParen - (closingBracket + 2));
+            result += "<img src=\"" + image + "\" alt=\"" + alt + "\">";
+            i = closingParen + 1;
+        } else if ( line[i] == '[' ) { // link
+            size_t closingBracket = line.find(']', i + 1);
+            size_t closingParen = line.find(')', closingBracket + 1);
+            if (closingBracket == std::string::npos || closingParen == std::string::npos)
+                throw renderError("Bad link, as of now try and avoid using [.");
+            std::string inside = line.substr(i + 1, closingBracket - (i + 1));
+            std::string link = line.substr(closingBracket + 2, closingParen - (closingBracket + 2));
+            result += "<a href=\"" + link + "\">" + inside + "</a>";
+            i = closingParen + 1;
+        } else if ( line.compare(i, 2, "~~") == 0 ) { // strikethrough
+            size_t closer = line.find("~~", i + 1);
+            if ( closer == std::string::npos )
+                throw renderError("Bad strikethrough, as of now try and avoid using ~~.");
+            std::string inside = line.substr(i + 2, closer - (i + 2));
+            result += "<s>" + inside + "</s>";
+            i = closer + 2;
+        } else if ( line[i] == '^' ) {
+            size_t closer = line.find('^', i + 1);
+            if ( closer == std::string::npos )
+                throw renderError("Bad superscript, as of now try and avoid using ^.");
+            std::string inside = line.substr(i + 1, closer - ( i + 1 ) );
+            result += "<sup>" + inside + "</sup>";
+            i = closer + 1;
+        } else if ( line[i] == '~' ) {
+            size_t closer = line.find('~', i + 1);
+            if ( closer == std::string::npos )
+                throw renderError("Bad superscript, as of now try and avoid using ~.");
+            std::string inside = line.substr(i + 1, closer - ( i + 1 ) );
+            result += "<sub>" + inside + "</sub>";
+            i = closer + 1;
+        }else {
+            result.push_back(line[i]);
+            i++;
+        }
+    }
+
+    // Close any unclosed tags
+    if (isBoth) result += "</b></i>";
+    if (isBold) result += "</b>";
+    if (isItalics) result += "</i>";
+
+    line = std::move(result); // overwrite input string
+}
+
 // There is a faster way to write this, put everything in 1 for loop that looks letter by letter.
 // Then look for specific things and continue. Should lower the hidden coeffiecnt of the big O.
-void mdRender::renderText(std::string& line) {
+void renderTextOld(std::string& line) {
     bool isItalics = false;
     bool isBold = false;
     bool isBoth = false;

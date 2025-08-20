@@ -29,3 +29,5 @@
 - List Element
 
 **I am Bold text** and *I am Italicized test* and ***I am both Bold and Italicized*** and [I am a link to GitHub](https://github.com/).
+
+~~Strikethrough~~ example text, along with ^superscript^ and ~subscript~.

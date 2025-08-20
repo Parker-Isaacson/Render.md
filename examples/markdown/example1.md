@@ -33,3 +33,5 @@
 ~~Strikethrough~~ example text, along with ^superscript^ and ~subscript~.
 
 I need to ==highlight this text!==
+
+I am example `code`!

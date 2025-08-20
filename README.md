@@ -19,11 +19,11 @@ The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.or
 - Subscript `H~2~O`
 - Superscript `x^2^`
 - Highlight `==very important words==`
+- Code `` `code` ``
 
 ## Unsupported Elements
 
 These markdown elements are currently not supported, though will be added at some point.
-- Code `` `code` ``
 - Order List `1. Item`
 - Tables
 - Fenced Code Blocks

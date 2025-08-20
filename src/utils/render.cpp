@@ -19,6 +19,11 @@ size_t countTrailingChar(const std::string& s, char c) {
     return count;
 }
 
+// Function to quickly print out a warning, just so I dont have to in code.
+void warn(const std::string& warning) {
+    std::cout << "\033[38;5;208mWARNING:\033[0m " << warning << "\n";
+}
+
 // Constructors
 mdRender::mdRender(std::istream& inStream, htmlElement* root)
     : inStream_(inStream), root_(root) {}
@@ -67,7 +72,7 @@ void mdRender::render(htmlElement* parent) {
     // Use the Adjustments to create the styles_
     std::string default_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + ";";
     std::string blockquote_ = "background-color: " + darkenColor(backgroundColor_, 0.15) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + "; border-left: 4px solid " + darkenColor(backgroundColor_, 0.3) + "; border-radius: 4px; padding-left: 2px;";
-    std::string code_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: max(2px, " + std::to_string(padding_) + "); margin: " + std::to_string(margin_) + "; width: fit-content;";
+    std::string code_ = "background-color: " + darkenColor(backgroundColor_, 0.3) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_ + 2) + "; margin: " + std::to_string(margin_) + "; border-radius: 4px;";
     std::string list_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_ + 10) + "; margin: " + std::to_string(margin_) + ";";
     styles_ = std::map<std::string, std::map<std::string, std::string>>{
         { "default", { { "style", default_ } } },
@@ -129,8 +134,12 @@ void mdRender::renderText(std::string& line) {
         } else if ( line.compare(i, 2, "![") == 0 ) { // image
             size_t closingBracket = line.find(']', i + 2);
             size_t closingParen = line.find(')', closingBracket + 1);
-            if (closingBracket == std::string::npos || closingParen == std::string::npos)
-                throw renderError("Bad image, as of now try and avoid using ![.");
+            if (closingBracket == std::string::npos || closingParen == std::string::npos) {
+                warn("Image not successfully closed!");
+                result.push_back(line[i]);
+                i += 2;
+                continue;
+            }
             std::string alt = line.substr(i + 2, closingBracket - (i + 2));
             std::string image = line.substr(closingBracket + 2, closingParen - (closingBracket + 2));
             result += "<img src=\"" + image + "\" alt=\"" + alt + "\">";
@@ -138,40 +147,75 @@ void mdRender::renderText(std::string& line) {
         } else if ( line[i] == '[' ) { // link
             size_t closingBracket = line.find(']', i + 1);
             size_t closingParen = line.find(')', closingBracket + 1);
-            if (closingBracket == std::string::npos || closingParen == std::string::npos)
-                throw renderError("Bad link, as of now try and avoid using [.");
+            if (closingBracket == std::string::npos || closingParen == std::string::npos) {
+                warn("Link not successfully closed!");
+                result.push_back(line[i]);
+                i++;
+                continue;
+            }
             std::string inside = line.substr(i + 1, closingBracket - (i + 1));
             std::string link = line.substr(closingBracket + 2, closingParen - (closingBracket + 2));
             result += "<a href=\"" + link + "\">" + inside + "</a>";
             i = closingParen + 1;
         } else if ( line.compare(i, 2, "~~") == 0 ) { // strikethrough
             size_t closer = line.find("~~", i + 1);
-            if ( closer == std::string::npos )
-                throw renderError("Bad strikethrough, as of now try and avoid using ~~.");
+            if ( closer == std::string::npos ) {
+                warn("Strikethrough not successfully closed!");
+                result.push_back(line[i]);
+                i += 2;
+                continue;
+            }
             std::string inside = line.substr(i + 2, closer - (i + 2));
             result += "<s>" + inside + "</s>";
             i = closer + 2;
-        } else if ( line[i] == '^' ) {
+        } else if ( line[i] == '^' ) { // superscript
             size_t closer = line.find('^', i + 1);
-            if ( closer == std::string::npos )
-                throw renderError("Bad superscript, as of now try and avoid using ^.");
+            if ( closer == std::string::npos ) {
+                warn("Superscript not successfully closed!");
+                result.push_back(line[i]);
+                i++;
+                continue;
+            }
             std::string inside = line.substr(i + 1, closer - ( i + 1 ) );
             result += "<sup>" + inside + "</sup>";
             i = closer + 1;
-        } else if ( line[i] == '~' ) {
+        } else if ( line[i] == '~' ) { // subscript
             size_t closer = line.find('~', i + 1);
-            if ( closer == std::string::npos )
-                throw renderError("Bad subscript, as of now try and avoid using ~.");
+            if ( closer == std::string::npos ) {
+                warn("Subscript not successfully closed!");
+                result.push_back(line[i]);
+                i++;
+                continue;
+            }
             std::string inside = line.substr(i + 1, closer - ( i + 1 ) );
             result += "<sub>" + inside + "</sub>";
             i = closer + 1;
-        } else if ( line.compare(i, 2, "==") == 0 ) { // strikethrough
+        } else if ( line.compare(i, 2, "==") == 0 ) { // highlight
             size_t closer = line.find("==", i + 1);
-            if ( closer == std::string::npos )
-                throw renderError("Bad highlight, as of now try and avoid using ==.");
+            if ( closer == std::string::npos ) {
+                warn("Highlight not successfully closed!");
+                result.push_back(line[i]);
+                i++;
+                continue;
+            }
             std::string inside = line.substr(i + 2, closer - (i + 2));
             result += "<mark>" + inside + "</mark>";
             i = closer + 2;
+        } else if ( line[i] == '`' ) { // code
+            size_t closer = line.find('`', i + 1);
+            if ( closer == std::string::npos ) {
+                warn("Code not successfully closed!");
+                result.push_back(line[i]);
+                i++;
+                continue;
+            }
+            std::string inside = line.substr(i + 1, closer - ( i + 1 ) );
+            result += "<span";
+            for ( const auto& [key, value] : styles_["code"] ) {
+                result += " " + key + "=\"" + value + "\"";
+            }
+            result += ">" + inside + "</span>";
+            i = closer + 1;
         } else {
             result.push_back(line[i]);
             i++;

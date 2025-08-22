@@ -45,3 +45,9 @@ I am some fenced Code!
 I am some fenced Code!
 I am some fenced Code!
 ```
+
+I am an item that needs a definition
+: I am the definition
+I am another item that needs a definition
+: I am the definition
+: I am the definition

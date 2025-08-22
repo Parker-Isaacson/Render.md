@@ -74,6 +74,7 @@ void mdRender::render(htmlElement* parent) {
     std::string blockquote_ = "background-color: " + darkenColor(backgroundColor_, 0.15) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + "; border-left: 4px solid " + darkenColor(backgroundColor_, 0.3) + "; border-radius: 4px; padding-left: 2px;";
     std::string code_ = "background-color: " + darkenColor(backgroundColor_, 0.3) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_ + 2) + "; margin: " + std::to_string(margin_) + "; border-radius: 4px; font-family: monospace;";
     std::string list_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_ + 10) + "; margin: " + std::to_string(margin_) + ";";
+    std::string dd_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + ";";
     styles_ = std::map<std::string, std::map<std::string, std::string>>{
         { "default", { { "style", default_ } } },
         { "heading",  { { "style", default_ } } },
@@ -84,7 +85,8 @@ void mdRender::render(htmlElement* parent) {
         { "code",  { { "style", code_ } } },
         { "taskList",  { { "style", list_ + " list-style: none;"} } },
         { "task", { { "style", default_ }, { "type", "checkbox" } } },
-        { "checked", { { "style", default_ }, { "type", "checkbox" }, { "checked", "checked" } } }
+        { "checked", { { "style", default_ }, { "type", "checkbox" }, { "checked", "checked" } } },
+        { "dd",  { { "style", dd_ } } }
     };
     // Now we check line by line for what it is
     for (; i < lines.size(); i++ ) {
@@ -114,7 +116,29 @@ void mdRender::render(htmlElement* parent) {
             }
             i += 1; // Jump off the code
             renderFencedCode(parent, codeLines);
-        } else if ( lines[i] == "" ) { // Blank Line
+        } else if ( i + 1 < lines.size() && !lines[i + 1].empty() && lines[i + 1][0] == ':' ) {
+            size_t j = i + 1;
+            std::vector<std::string> definitionList = { lines[i] };
+            while (j < lines.size() && !lines[j].empty() && lines[j][0] == ':') {
+                definitionList.push_back(lines[j]);
+                j++;
+            }
+            i = j - 1;
+            renderDefinitionList(parent, definitionList);
+        } 
+        
+        /*else if (!lines[i].empty() && lines[i][0] != ':') {
+            size_t j = i + 1;
+            if (j < lines.size() && !lines[j].empty() && lines[j][0] == ':') {
+                std::vector<std::string> definitionList = { lines[i] };
+                while (j < lines.size() && !lines[j].empty() && lines[j][0] == ':') {
+                    definitionList.push_back(lines[j]);
+                    j++;
+                }
+                i = j - 1;
+                renderDefinitionList(parent, definitionList);
+            }
+        }*/ else if ( lines[i] == "" ) { // Blank Line
             continue;
         } else {
             line = lines[i];
@@ -457,6 +481,31 @@ void mdRender::renderFencedCode(htmlElement* parent, std::vector<std::string>& l
     }
     htmlElement* paragraph = new htmlElement(parent->get_tab_index() + 1, "p", codeText, styles_["code"]);
     parent->add_child(paragraph);
+}
+
+void mdRender::renderDefinitionList(htmlElement* parent, std::vector<std::string>& lines) { // TODO: Write me :3
+    if ( lines.empty() ) {
+        throw renderError("Empty List.");
+        return;
+    }
+
+    htmlElement* list = new htmlElement(parent->get_tab_index() + 1, "dl", styles_["list"]);
+
+    renderText(lines[0]);
+
+    htmlElement* dt = new htmlElement(list->get_tab_index() + 1, "dt", lines[0], styles_["item"]);
+
+    list->add_child(dt);
+
+    for ( int i = 1; i < lines.size(); i++ ) {
+        std::string remainingLine = lines[i].substr(2);
+
+        htmlElement* dd = new htmlElement(list->get_tab_index() + 1, "dd", remainingLine, styles_["dd"]);
+
+        list->add_child(dd);
+    }
+
+    parent->add_child(list);
 }
 
 // Output method

@@ -30,13 +30,17 @@ int main(int argc, char** argv) {
         renderObj.render();
         renderObj.output();
     } catch (const renderError& e) {
-        std::cout << "Rendering Error: " << e.what() << "\n";
+        std::cerr << "Rendering Error: " << e.what() << "\n";
         delete root;
         return 1;
     } catch (const htmlError& e) {
-        std::cout << "HTML Error: " << e.what() << "\n";
+        std::cerr << "HTML Error: " << e.what() << "\n";
         delete root;
         return 2;
+    } catch (...) {
+        std::cerr << "Horrible Error!";
+        delete root;
+        return -1;
     }
     std::cout << "Markdon Generation Complete!\nAdd: \"<iframe src=\"" + outputFile + "\" style=\"border:none; width:750px; height: 750px;\"></iframe>\" into the body of your html file where you want the markdown to go! Make sure to check the src, width and height!" << std::endl;
     return 0;

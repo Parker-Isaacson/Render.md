@@ -108,6 +108,16 @@ void mdRender::render(htmlElement* parent) {
                 listLines.push_back(lines[i]);
             }
             renderList(parent, listLines);
+        } else if (std::isdigit(lines[i][0])) { // Ordered list
+            std::vector<std::string> listLines;
+            for (; i < lines.size(); i++) {
+                const std::string& line = lines[i];
+                 size_t pos = 0;
+                while (pos < line.size() && std::isdigit(line[pos])) pos++;
+                if (pos == 0 || pos >= line.size() || line[pos] != '.') break;
+                listLines.push_back(line);
+            }
+            renderOrderedList(parent, listLines);
         } else if ( lines[i] == "```" ) { // Fenced Code Block
             std::vector<std::string> codeLines;
             i += 1; // Jump top the actuall code
@@ -125,20 +135,7 @@ void mdRender::render(htmlElement* parent) {
             }
             i = j - 1;
             renderDefinitionList(parent, definitionList);
-        } 
-        
-        /*else if (!lines[i].empty() && lines[i][0] != ':') {
-            size_t j = i + 1;
-            if (j < lines.size() && !lines[j].empty() && lines[j][0] == ':') {
-                std::vector<std::string> definitionList = { lines[i] };
-                while (j < lines.size() && !lines[j].empty() && lines[j][0] == ':') {
-                    definitionList.push_back(lines[j]);
-                    j++;
-                }
-                i = j - 1;
-                renderDefinitionList(parent, definitionList);
-            }
-        }*/ else if ( lines[i] == "" ) { // Blank Line
+        } else if ( lines[i] == "" ) { // Blank Line
             continue;
         } else {
             line = lines[i];
@@ -503,6 +500,42 @@ void mdRender::renderDefinitionList(htmlElement* parent, std::vector<std::string
         htmlElement* dd = new htmlElement(list->get_tab_index() + 1, "dd", remainingLine, styles_["dd"]);
 
         list->add_child(dd);
+    }
+
+    parent->add_child(list);
+}
+
+void mdRender::renderOrderedList(htmlElement* parent, std::vector<std::string> lines) {
+    if (lines.empty()) {
+        throw renderError("Empty ordered list.");
+        return;
+    }
+
+    const std::string& first = lines[0];
+    size_t pos = 0;
+    while (pos < first.size() && std::isdigit(first[pos])) pos++;
+    if (pos == 0 || pos >= first.size() || first[pos] != '.' || pos + 1 >= first.size() || first[pos + 1] != ' ') {
+        throw renderError("Bad Ordered List Format.");
+        return;
+    }
+
+    htmlElement* list = new htmlElement(parent->get_tab_index() + 1, "ol", styles_["list"]);
+
+    for (const std::string& line : lines) {
+        // Validate each line
+        size_t pos = 0;
+        while (pos < line.size() && std::isdigit(line[pos])) pos++;
+        if (pos == 0 || pos >= line.size() || line[pos] != '.' || pos + 1 >= line.size() || line[pos + 1] != ' ') {
+            throw renderError("Bad line in ordered list.");
+            break; 
+        }
+
+        // Strip "1. " (or "23. ") off the front
+        std::string remainingLine = line.substr(pos + 2);
+
+        renderText(remainingLine); 
+        htmlElement* item = new htmlElement(list->get_tab_index() + 1, "li", remainingLine, styles_["list"]);
+        list->add_child(item);
     }
 
     parent->add_child(list);

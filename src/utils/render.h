@@ -54,6 +54,7 @@ public:
     void renderTaskList(htmlElement* parent, std::vector<std::string>& lines);
     void renderFencedCode(htmlElement* parent, std::vector<std::string>& lines);
     void renderDefinitionList(htmlElement* parent, std::vector<std::string>& lines);
+    void renderOrderedList(htmlElement* parent, std::vector<std::string> lines);
 
     // Method for outputing
     void output();

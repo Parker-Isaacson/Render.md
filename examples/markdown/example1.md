@@ -24,9 +24,11 @@
 - List Element
 - List Element
 - List Element
-- List Element
-- List Element
-- List Element
+
+
+1. List Element
+9. List Element
+111. List Element
 
 **I am Bold text** and *I am Italicized test* and ***I am both Bold and Italicized*** and [I am a link to GitHub](https://github.com/).
 

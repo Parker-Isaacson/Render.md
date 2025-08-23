@@ -12,6 +12,7 @@ The markdown elements that will from [Markdown Cheat Sheet](www.markdownguide.or
 - Blockquote `> blockquote`
 - Lists
   - Unordered `- Item`
+  - Order List `1. Item`
   - Task `- [ ] Task`
   - Definition List
 ```
@@ -32,7 +33,6 @@ First Term
 ## Unsupported Elements
 
 These markdown elements are currently not supported, though will be added at some point.
-- Order List `1. Item`
 - Tables
 - Footnotes
 
@@ -43,6 +43,7 @@ Restrictions to how this will compile are strict.
 - No nesting is allowed.
 - Horizontal Rules must be the only elemet on a line. Along with the start and end for Fenced Code Blocks.
 - Heading ID's must be at the end of the line.
+- Ordered lists only care for a number being in front, not its value.
 
 ## Adjustments
 

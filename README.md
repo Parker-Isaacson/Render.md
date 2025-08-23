@@ -29,11 +29,11 @@ First Term
 - Highlight `==very important words==`
 - Code `` `code` ``
 - Fenced Code Blocks ```` ```code``` ````
+- Tables
 
 ## Unsupported Elements
 
 These markdown elements are currently not supported, though will be added at some point.
-- Tables
 - Footnotes
 
 ## Restrictions
@@ -44,6 +44,15 @@ Restrictions to how this will compile are strict.
 - Horizontal Rules must be the only elemet on a line. Along with the start and end for Fenced Code Blocks.
 - Heading ID's must be at the end of the line.
 - Ordered lists only care for a number being in front, not its value.
+- Tables, by default, will have right align and will assume the first line is the header, all other lines will be inside the table body.
+
+## Additional Ideas
+
+These are just some ideas that might be released later.
+- Nesting
+- Less strictness on the amount of spaces preceeding an element
+- Switch to regex searching
+- Tabular left, center, and right aligning, along with being able to determine alignment per column.
 
 ## Adjustments
 

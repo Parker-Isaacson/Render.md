@@ -19,6 +19,18 @@ size_t countTrailingChar(const std::string& s, char c) {
     return count;
 }
 
+void trim(std::string& s) {
+    size_t start = 0;
+    while (start < s.size() && std::isspace(static_cast<unsigned char>(s[start]))) {
+        ++start;
+    }
+    size_t end = s.size();
+    while (end > start && std::isspace(static_cast<unsigned char>(s[end - 1]))) {
+        --end;
+    }
+    s = s.substr(start, end - start);
+}
+
 // Function to quickly print out a warning
 void warn(const std::string& warning) {
     std::cout << "\033[38;5;208mWARNING:\033[0m " << warning << "\n";
@@ -86,7 +98,9 @@ void mdRender::render(htmlElement* parent) {
         { "taskList",  { { "style", list_ + " list-style: none;"} } },
         { "task", { { "style", default_ }, { "type", "checkbox" } } },
         { "checked", { { "style", default_ }, { "type", "checkbox" }, { "checked", "checked" } } },
-        { "dd",  { { "style", dd_ } } }
+        { "dd",  { { "style", dd_ } } },
+        { "table", { { "style", default_ + "border-collapse: collapse; width: 100%; text-align: left;"} } },
+        { "cell", { { "style", default_ + "border: 1px solid " + darkenColor(backgroundColor_, 0.3) + ";" } } }
     };
     // Now we check line by line for what it is
     for (; i < lines.size(); i++ ) {
@@ -112,7 +126,7 @@ void mdRender::render(htmlElement* parent) {
             std::vector<std::string> listLines;
             for (; i < lines.size(); i++) {
                 const std::string& line = lines[i];
-                 size_t pos = 0;
+                size_t pos = 0;
                 while (pos < line.size() && std::isdigit(line[pos])) pos++;
                 if (pos == 0 || pos >= line.size() || line[pos] != '.') break;
                 listLines.push_back(line);
@@ -126,7 +140,13 @@ void mdRender::render(htmlElement* parent) {
             }
             i += 1; // Jump off the code
             renderFencedCode(parent, codeLines);
-        } else if ( i + 1 < lines.size() && !lines[i + 1].empty() && lines[i + 1][0] == ':' ) {
+        } else if ( lines[i][0] == '|' ) { // Table
+            std::vector<std::string> tableLines;
+            for (; i < lines.size() && lines[i][0] == '|'; i++) {
+                tableLines.push_back(lines[i]);
+            }
+            rendertable(parent, tableLines);
+        } else if ( i + 1 < lines.size() && !lines[i + 1].empty() && lines[i + 1][0] == ':' ) { // Definition list
             size_t j = i + 1;
             std::vector<std::string> definitionList = { lines[i] };
             while (j < lines.size() && !lines[j].empty() && lines[j][0] == ':') {
@@ -165,6 +185,11 @@ void mdRender::renderText(std::string& line) {
             isBold = !isBold;
             i += 2;
         } else if ( line[i] == '*' ) { // italics
+            if ( i > 0 && line[i - 1] == '\\' ) {
+                result += line[i];
+                i++;
+                continue;
+            }
             result += (isItalics ? "</i>" : "<i>");
             isItalics = !isItalics;
             i++;
@@ -539,6 +564,45 @@ void mdRender::renderOrderedList(htmlElement* parent, std::vector<std::string> l
     }
 
     parent->add_child(list);
+}
+
+void mdRender::rendertable(htmlElement* parent, std::vector<std::string> lines) {
+    if ( lines.empty() ) {
+        throw renderError("Empty Table.");
+        return;
+    }
+
+    if ( lines[0][0] != '|' ) {
+        throw renderError("Bad Table Format.");
+        return;
+    }
+
+    htmlElement* table = new htmlElement(parent->get_tab_index() + 1, "table", styles_["table"]);
+
+    bool th = true;
+
+    for ( std::string line : lines ) {
+        if ( line[0] != '|' ) {
+            throw renderError("Bad line in Table.");
+            return;
+        }
+        htmlElement* tr = new htmlElement(table->get_tab_index() + 1, "tr", styles_["default"]);
+        size_t start = 0;
+        size_t end = line.find('|', 1);
+        while ( end != std::string::npos ) {
+            std::string inside = line.substr(start + 2, end - start - 2);
+            trim(inside);
+            renderText(inside);
+            htmlElement* cell = new htmlElement(tr->get_tab_index() + 1, ( th ) ? "th" : "td", inside, styles_["cell"]);
+            tr->add_child(cell);
+            start = end;
+            end = line.find('|', start + 1);
+        }
+        table->add_child(tr);
+        th = false; // We are no longer on the first line
+    }
+
+    parent->add_child(table);
 }
 
 // Output method

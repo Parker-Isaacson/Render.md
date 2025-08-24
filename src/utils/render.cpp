@@ -110,46 +110,45 @@ void mdRender::render(htmlElement* parent) {
         }
     }
     // Use the Adjustments to create the styles_
-    std::string default_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + ";";
-    std::string blockquote_ = "background-color: " + darkenColor(backgroundColor_, 0.15) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "; margin: " + std::to_string(margin_) + "; border-left: 4px solid " + darkenColor(backgroundColor_, 0.3) + "; border-radius: 4px; padding-left: 2px;";
-    std::string code_ = "background-color: " + darkenColor(backgroundColor_, 0.3) + "; color: " + textColor_ + "; padding: " + std::to_string(padding_ + 2) + "; margin: " + std::to_string(margin_) + "; border-radius: 4px; font-family: monospace;";
-    std::string list_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_ + 10) + "; margin: " + std::to_string(margin_) + ";";
-    std::string dd_ = "background-color: " + backgroundColor_ + "; color: " + textColor_ + "; padding: " + std::to_string(padding_) + ";";
-    styles_ = std::map<std::string, std::map<std::string, std::string>>{
-        { "default", { { "style", default_ } } },
-        { "heading",  { { "style", default_ } } },
-        { "paragraph",  { { "style", default_ } } },
-        { "blockquote",  { { "style", blockquote_ + " width: fit-content;" } } },
-        { "list",  { { "style", list_ } } },
-        { "item",  { { "style", default_ } } },
-        { "code",  { { "style", code_ } } },
-        { "taskList",  { { "style", list_ + " list-style: none;"} } },
-        { "task", { { "style", default_ }, { "type", "checkbox" } } },
-        { "checked", { { "style", default_ }, { "type", "checkbox" }, { "checked", "checked" } } },
-        { "dd",  { { "style", dd_ } } },
-        { "table", { { "style", default_ + "border-collapse: collapse; width: 100%; text-align: left;"} } },
-        { "cell", { { "style", default_ + "border: 1px solid " + darkenColor(backgroundColor_, 0.3) + ";" } } }
-    };
+    std::string styles = 
+    ".default{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";}"
+    ".heading{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";}"
+    ".paragraph{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";}"
+    ".blockquote{background-color:" + darkenColor(backgroundColor_,0.15) + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";border-left:4px solid " + darkenColor(backgroundColor_,0.3) + ";border-radius:4px;padding-left:2px;width:fit-content;}"
+    ".list{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_+10) + ";margin:" + std::to_string(margin_) + ";}"
+    ".item{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";}"
+    ".code{background-color:" + darkenColor(backgroundColor_,0.3) + ";color:" + textColor_ + ";padding:" + std::to_string(padding_+2) + ";margin:" + std::to_string(margin_) + ";border-radius:4px;font-family:monospace;}"
+    ".taskList{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_) + "," + std::to_string(padding_+10) + ";margin:" + std::to_string(margin_) + ";list-style:none;}"
+    ".task{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";}"
+    ".checked{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";}"
+    ".dd{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";}"
+    ".table{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";border-collapse:collapse;width:100%;text-align:left;}"
+    ".cell{background-color:" + backgroundColor_ + ";color:" + textColor_ + ";padding:" + std::to_string(padding_) + ";margin:" + std::to_string(margin_) + ";border:1px solid " + darkenColor(backgroundColor_,0.3) + ";}";
+    htmlElement* head = new htmlElement(parent->get_tab_index(), "head");
+    htmlElement* style = new htmlElement(head->get_tab_index(), "style", styles);
+    head->add_child(style);
+    parent->add_child(head);
     // Now we check line by line for what it is
+    htmlElement* body = new htmlElement(parent->get_tab_index(), "body");
     for (; i < lines.size(); i++ ) {
         if ( lines[i] == "---" ) { // hr
-            parent->add_child(new htmlElement(parent->get_tab_index() + 1, "hr"));
+            body->add_child(new htmlElement(body->get_tab_index() + 1, "hr"));
         } else if ( lines[i][0] == '#' ) { // Heading
-            renderHeading(parent, lines[i]);
+            renderHeading(body, lines[i]);
         } else if ( lines[i][0] == '>' ) { // Blockquote
-            renderBlockQuote(parent, lines[i]);
+            renderBlockQuote(body, lines[i]);
         } else if ( lines[i].compare(0, 3, "- [") == 0 ) {
             std::vector<std::string> listLines;
             for (; i < lines.size() && lines[i].compare(0, 3, "- [") == 0; i++) {
                 listLines.push_back(lines[i]);
             }
-            renderTaskList(parent, listLines);
+            renderTaskList(body, listLines);
         } else if ( lines[i][0] == '-' ) { // List
             std::vector<std::string> listLines;
             for (; i < lines.size() && lines[i][0] == '-'; i++) {
                 listLines.push_back(lines[i]);
             }
-            renderList(parent, listLines);
+            renderList(body, listLines);
         } else if (std::isdigit(lines[i][0])) { // Ordered list
             std::vector<std::string> listLines;
             for (; i < lines.size(); i++) {
@@ -159,7 +158,7 @@ void mdRender::render(htmlElement* parent) {
                 if (pos == 0 || pos >= line.size() || line[pos] != '.') break;
                 listLines.push_back(line);
             }
-            renderOrderedList(parent, listLines);
+            renderOrderedList(body, listLines);
         } else if ( lines[i] == "```" ) { // Fenced Code Block
             std::vector<std::string> codeLines;
             i += 1; // Jump top the actuall code
@@ -167,13 +166,13 @@ void mdRender::render(htmlElement* parent) {
                 codeLines.push_back(lines[i]);
             }
             i += 1; // Jump off the code
-            renderFencedCode(parent, codeLines);
+            renderFencedCode(body, codeLines);
         } else if ( lines[i][0] == '|' ) { // Table
             std::vector<std::string> tableLines;
             for (; i < lines.size() && lines[i][0] == '|'; i++) {
                 tableLines.push_back(lines[i]);
             }
-            rendertable(parent, tableLines);
+            rendertable(body, tableLines);
         } else if ( i + 1 < lines.size() && !lines[i + 1].empty() && lines[i + 1][0] == ':' ) { // Definition list
             size_t j = i + 1;
             std::vector<std::string> definitionList = { lines[i] };
@@ -182,24 +181,25 @@ void mdRender::render(htmlElement* parent) {
                 j++;
             }
             i = j - 1;
-            renderDefinitionList(parent, definitionList);
+            renderDefinitionList(body, definitionList);
         } else if ( lines[i].compare(0, 2, "[^") == 0 ) { // Footnote
             line = lines[i];
             size_t pos = line.find(']', 2);
             std::string footnote = line.substr(0, pos + 1);
             std::string inside = line.substr(pos + 1);
             renderText(inside);
-            htmlElement* paragraph = new htmlElement(parent->get_tab_index() + 1, "p", genFootnote(footnote, false) + inside, styles_["paragraph"]);
-            parent->add_child(paragraph);
+            htmlElement* paragraph = new htmlElement(body->get_tab_index() + 1, "p", genFootnote(footnote, false) + inside, styles_["paragraph"]);
+            body->add_child(paragraph);
         } else if ( lines[i] == "" ) { // Blank Line
             continue;
         } else {
             line = lines[i];
             renderText(line);
-            htmlElement* paragraph = new htmlElement(parent->get_tab_index() + 1, "p", line, styles_["paragraph"]);
-            parent->add_child(paragraph);
+            htmlElement* paragraph = new htmlElement(body->get_tab_index() + 1, "p", line, styles_["paragraph"]);
+            body->add_child(paragraph);
         }
     }
+    parent->add_child(body);
 }
 
 // This is the faster re-write
@@ -656,11 +656,13 @@ void mdRender::rendertable(htmlElement* parent, std::vector<std::string> lines) 
 
 // Output method
 void mdRender::output() {
+    outStream_ << "<!DOCTYPE html>\n";
     root_->htmlRender(outStream_);
     delete root_;
 }
 
 void mdRender::output(std::ostream& outStream) {
+    outStream << "<!DOCTYPE html>\n";
     root_->htmlRender(outStream);
     delete root_;
 }

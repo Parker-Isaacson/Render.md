@@ -37,7 +37,21 @@ private:
 
     // Defualt styles for fast lookup
     // Should contain, heading, paragraph, blockquote, code, list, list-item, defualt
-    std::map<std::string, std::map<std::string, std::string>> styles_;
+    std::map<std::string, std::map<std::string, std::string>> styles_ = std::map<std::string, std::map<std::string, std::string>>{
+        { "default", { { "class", "default" } } },
+        { "heading",  { { "class", "heading" } } },
+        { "paragraph",  { { "class", "paragraph" } } },
+        { "blockquote",  { { "class", "blockquote" } } },
+        { "list",  { { "class", "list" } } },
+        { "item",  { { "class", "default" } } },
+        { "code",  { { "class", "code" } } },
+        { "taskList",  { { "class", "taskList"} } },
+        { "task", { { "class", "task" }, { "type", "checkbox" } } },
+        { "checked", { { "class", "checked" }, { "type", "checkbox" }, { "checked", "checked" } } },
+        { "dd",  { { "class", "dd" } } },
+        { "table", { { "class", "table" } } },
+        { "cell", { { "class", "cell" } } }
+    };;
 
     // Utility Methods
     size_t countLeadingChar(const std::string& s, char c);
@@ -47,8 +61,6 @@ private:
     std::string genFootnote(std::string footnote, bool isRef);
 
     // Rendering Methods
-    void render(); 
-    void render(htmlElement* parent);
     void renderText(std::string& line);
     void renderHeading(htmlElement* parent, std::string& line);
     void renderBlockQuote(htmlElement* parent, std::string& line);
@@ -66,6 +78,10 @@ public:
     // Method for outputing
     void output();
     void output(std::ostream& outStream);
+
+    // Rendering Methods
+    void render(); 
+    void render(htmlElement* parent);
 };
 
 #endif // RENDER_H

@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
             std::cout << "Bad Input Param: " << param << ". Skipping." << "\n";
         }
     }
-    htmlElement* root = new htmlElement(); // Created out here so it can be deleted just in case
+    htmlElement* root = new htmlElement(0, "html", std::map<std::string, std::string>{ {"lang", "en"} } ); // Created out here so it can be deleted just in case
     try {
         std::ifstream inStream(inputFile);
         std::ofstream outStream(outputFile);

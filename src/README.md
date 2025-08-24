@@ -21,11 +21,11 @@ g++ --std=c++17 --static main.cpp utils/html.cpp utils/render.cpp utils/colors.c
 For a regular compile.
 ```bash
 cd src/
-g++ --std=c++17 main.cpp utils/html.cpp utils/render.cpp utils/colors.cpp -o windows/mdrender
+g++ --std=c++17 main.cpp utils/html.cpp utils/render.cpp utils/colors.cpp -o linux/mdrender
 ```
 
 For a static compile.
 ```bash
 cd src/
-g++ --std=c++17 --static main.cpp utils/html.cpp utils/render.cpp utils/colors.cpp -o windows/mdrender
+g++ --std=c++17 --static main.cpp utils/html.cpp utils/render.cpp utils/colors.cpp -o linux/mdrender
 ```

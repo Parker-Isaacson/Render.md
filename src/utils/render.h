@@ -39,15 +39,17 @@ private:
     // Should contain, heading, paragraph, blockquote, code, list, list-item, defualt
     std::map<std::string, std::map<std::string, std::string>> styles_;
 
-public:
-    // Constructors
-    mdRender(std::istream& inStream, htmlElement* root);
-    mdRender(std::istream& inStream, std::ostream& outStream, htmlElement* root);
+    // Utility Methods
+    size_t countLeadingChar(const std::string& s, char c);
+    size_t countTrailingChar(const std::string& s, char c);
+    void trim(std::string& s);
+    void warn(const std::string& warning);
+    std::string genFootnote(std::string footnote, bool isRef);
 
     // Rendering Methods
     void render(); 
     void render(htmlElement* parent);
-    void renderText(std::string& line); // Checks a give line for Bold, Italics, Code, Link, or Image
+    void renderText(std::string& line);
     void renderHeading(htmlElement* parent, std::string& line);
     void renderBlockQuote(htmlElement* parent, std::string& line);
     void renderList(htmlElement* parent, std::vector<std::string>& lines);
@@ -56,6 +58,10 @@ public:
     void renderDefinitionList(htmlElement* parent, std::vector<std::string>& lines);
     void renderOrderedList(htmlElement* parent, std::vector<std::string> lines);
     void rendertable(htmlElement* parent, std::vector<std::string> lines);
+public:
+    // Constructors
+    mdRender(std::istream& inStream, htmlElement* root);
+    mdRender(std::istream& inStream, std::ostream& outStream, htmlElement* root);
 
     // Method for outputing
     void output();

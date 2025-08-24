@@ -1,7 +1,7 @@
 #include "render.h"
 
 // Utility Functions
-size_t countLeadingChar(const std::string& s, char c) {
+size_t mdRender::countLeadingChar(const std::string& s, char c) {
     size_t count = 0;
     while ( count < s.size() && s[count] == c ) {
         count++;
@@ -9,7 +9,7 @@ size_t countLeadingChar(const std::string& s, char c) {
     return count;
 }
 
-size_t countTrailingChar(const std::string& s, char c) {
+size_t mdRender::countTrailingChar(const std::string& s, char c) {
     size_t count = 0;
     size_t i = s.size();
     while ( i > 0 && s[i - 1] == c ) {
@@ -19,7 +19,7 @@ size_t countTrailingChar(const std::string& s, char c) {
     return count;
 }
 
-void trim(std::string& s) {
+void mdRender::trim(std::string& s) {
     size_t start = 0;
     while (start < s.size() && std::isspace(static_cast<unsigned char>(s[start]))) {
         ++start;
@@ -31,9 +31,37 @@ void trim(std::string& s) {
     s = s.substr(start, end - start);
 }
 
-// Function to quickly print out a warning
-void warn(const std::string& warning) {
+// Method to quickly print out a warning
+void mdRender::warn(const std::string& warning) {
     std::cout << "\033[38;5;208mWARNING:\033[0m " << warning << "\n";
+}
+
+// Method to create text for a footnote
+// isRef should be set true if being called during renderText
+std::string mdRender::genFootnote(std::string footnote, bool isRef) {
+    if ( footnote[0] != '[' || footnote[1] != '^' || footnote[footnote.length() - 1] != ']' ) {
+        throw renderError("Bad Footnote.");
+    }
+
+    std::string fnValue = footnote.substr(2, footnote.length() - 3 );
+
+    /*
+    <sup id="fnref:1"><a href="#fn:1">1</a></sup> returned when isRef == true
+    <sup id="fn:1"><a href="#fnref:1">1</a></sup> returned when isRef == false
+    */
+
+    std::string fn = "<sup id=\"";
+    if ( isRef ) // handle the id
+        fn += "#fnref:" + fnValue;
+    else
+        fn += "#fn:" + fnValue;
+    fn += "\"><a href=\"";
+    if ( isRef ) // handle the anchor
+        fn += "#fn:" + fnValue;
+    else
+        fn += "#fnref:" + fnValue;
+    fn += "\">" + fnValue + "</a></sup>";
+    return fn;
 }
 
 // Constructors
@@ -155,6 +183,14 @@ void mdRender::render(htmlElement* parent) {
             }
             i = j - 1;
             renderDefinitionList(parent, definitionList);
+        } else if ( lines[i].compare(0, 2, "[^") == 0 ) { // Footnote
+            line = lines[i];
+            size_t pos = line.find(']', 2);
+            std::string footnote = line.substr(0, pos + 1);
+            std::string inside = line.substr(pos + 1);
+            renderText(inside);
+            htmlElement* paragraph = new htmlElement(parent->get_tab_index() + 1, "p", genFootnote(footnote, false) + inside, styles_["paragraph"]);
+            parent->add_child(paragraph);
         } else if ( lines[i] == "" ) { // Blank Line
             continue;
         } else {
@@ -199,6 +235,7 @@ void mdRender::renderText(std::string& line) {
             if (closingBracket == std::string::npos || closingParen == std::string::npos) {
                 warn("Image not successfully closed!");
                 result.push_back(line[i]);
+                result.push_back(line[i + 1]);
                 i += 2;
                 continue;
             }
@@ -206,6 +243,18 @@ void mdRender::renderText(std::string& line) {
             std::string image = line.substr(closingBracket + 2, closingParen - (closingBracket + 2));
             result += "<img src=\"" + image + "\" alt=\"" + alt + "\">";
             i = closingParen + 1;
+        } else if ( line.compare(i, 2, "[^") == 0 ) { // Footnote
+            size_t pos = line.find(']', i + 2);
+            if ( pos == std::string::npos ) {
+                warn("Footnote not closed.");
+                result.push_back(line[i]);
+                result.push_back(line[i + 1]);
+                i += 2;
+                continue;
+            }
+            std::string footnote = genFootnote(line.substr(i, pos - i + 1 ), true);
+            result += footnote;
+            i = pos + 1;
         } else if ( line[i] == '[' ) { // link
             size_t closingBracket = line.find(']', i + 1);
             size_t closingParen = line.find(')', closingBracket + 1);

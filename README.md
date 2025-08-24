@@ -30,11 +30,12 @@ First Term
 - Code `` `code` ``
 - Fenced Code Blocks ```` ```code``` ````
 - Tables
-
-## Unsupported Elements
-
-These markdown elements are currently not supported, though will be added at some point.
 - Footnotes
+```
+Here is some text referencing a footnote[^1].
+
+[^1] I am the footnote!
+```
 
 ## Restrictions
 
@@ -45,6 +46,7 @@ Restrictions to how this will compile are strict.
 - Heading ID's must be at the end of the line.
 - Ordered lists only care for a number being in front, not its value.
 - Tables, by default, will have right align and will assume the first line is the header, all other lines will be inside the table body.
+- Footnotes must only be on one line.
 
 ## Additional Ideas
 
@@ -53,6 +55,7 @@ These are just some ideas that might be released later.
 - Less strictness on the amount of spaces preceeding an element
 - Switch to regex searching
 - Tabular left, center, and right aligning, along with being able to determine alignment per column.
+- Have footnotes send you to the actual footnote and not just do nothing.
 
 ## Adjustments
 

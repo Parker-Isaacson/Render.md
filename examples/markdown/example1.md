@@ -15,6 +15,8 @@
 
 **I am Bold text** and *I am Italicized test* and ***I am both Bold and Italicized*** and [I am a link to GitHub](https://github.com/).
 
+I part of the footnote [^1] example text.
+
 ---
 
 ![I am an image](../../media/KolibriBackground.png)
@@ -31,8 +33,6 @@
 111. List Element
 
 **I am Bold text** and *I am Italicized test* and ***I am both Bold and Italicized*** and [I am a link to GitHub](https://github.com/).
-
-~~Strikethrough~~ example text, along with ^superscript^ and ~subscript~.
 
 I need to ==highlight this text!==
 
@@ -59,3 +59,5 @@ I am another item that needs a definition
 | Cell 4 | Cell 5 | Cell 6 |
 | Cell 7 | Cell 8 | Cell 9 |
 | Cell \* | Cell 0 | Cell # |
+
+[^1] I am the footnote.
